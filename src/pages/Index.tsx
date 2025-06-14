@@ -59,9 +59,11 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" disabled>
-                  Próximamente
-                </Button>
+                <Link to="/beneficiarios">
+                  <Button className="w-full">
+                    Ir a Subir Archivos
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -76,9 +78,11 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" disabled>
-                  Próximamente
-                </Button>
+                <Link to="/beneficiarios">
+                  <Button className="w-full">
+                    Buscar Ahora
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
