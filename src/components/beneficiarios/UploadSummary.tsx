@@ -11,7 +11,7 @@ interface UploadSummaryData {
   validRows: number;
   processedRows: number;
   skippedRows: number;
-  duplicateRows: number;
+  duplicateRows: number; // Keep for compatibility but will always be 0
   skippedReasons: string[];
   processingTime: number;
   errorMessage?: string;
@@ -32,7 +32,6 @@ export const UploadSummary: React.FC<UploadSummaryProps> = ({
     validRows,
     processedRows,
     skippedRows,
-    duplicateRows,
     skippedReasons,
     processingTime,
     errorMessage
@@ -62,8 +61,8 @@ export const UploadSummary: React.FC<UploadSummaryProps> = ({
       <CardContent className="space-y-4">
         {success ? (
           <>
-            {/* Success Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Success Stats - Removed duplicate column */}
+            <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-3 bg-blue-50 rounded-lg">
                 <div className="text-lg font-bold text-blue-600">{totalRows.toLocaleString()}</div>
                 <div className="text-xs text-gray-600">Total de filas</div>
@@ -75,10 +74,6 @@ export const UploadSummary: React.FC<UploadSummaryProps> = ({
               <div className="text-center p-3 bg-yellow-50 rounded-lg">
                 <div className="text-lg font-bold text-yellow-600">{skippedRows.toLocaleString()}</div>
                 <div className="text-xs text-gray-600">Filas omitidas</div>
-              </div>
-              <div className="text-center p-3 bg-purple-50 rounded-lg">
-                <div className="text-lg font-bold text-purple-600">{duplicateRows.toLocaleString()}</div>
-                <div className="text-xs text-gray-600">Duplicados</div>
               </div>
             </div>
 
@@ -99,7 +94,7 @@ export const UploadSummary: React.FC<UploadSummaryProps> = ({
                 </p>
                 {skippedRows > 0 && (
                   <p className="text-sm mt-1">
-                    Se omitieron {skippedRows.toLocaleString()} filas por problemas de validación.
+                    Se omitieron {skippedRows.toLocaleString()} filas solo por problemas de validación (filas vacías o encabezados).
                   </p>
                 )}
               </AlertDescription>
@@ -116,9 +111,6 @@ export const UploadSummary: React.FC<UploadSummaryProps> = ({
                       {skippedReasons.map((reason, index) => (
                         <li key={index}>{reason}</li>
                       ))}
-                      {duplicateRows > 0 && (
-                        <li>{duplicateRows} filas duplicadas (mismo RUT)</li>
-                      )}
                     </ul>
                   </div>
                 </AlertDescription>

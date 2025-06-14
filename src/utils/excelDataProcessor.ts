@@ -1,4 +1,3 @@
-
 interface RawExcelRow {
   [key: string]: any;
 }
@@ -26,19 +25,26 @@ const cleanRut = (rut: string): string => {
   return rut.toString().replace(/[.\-\s]/g, '').toUpperCase();
 };
 
-// Validate if a row should be processed
+// Validate if a row should be processed - simplified to only skip truly empty or header rows
 const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reason?: string } => {
   const apellido = row.APELLIDO?.toString().trim() || '';
   const nombre = row.NOMBRE?.toString().trim() || '';
   const rut = row.RUT?.toString().trim() || '';
   const empresa = row.EMPRESA?.toString().trim() || '';
 
-  // Check for missing required fields (RUT is no longer required)
+  // Skip header rows
+  if (apellido.toUpperCase() === 'APELLIDO' || 
+      nombre.toUpperCase() === 'NOMBRE' ||
+      empresa.toUpperCase() === 'EMPRESA') {
+    return { isValid: false, reason: 'Fila de encabezado' };
+  }
+
+  // Check for missing required fields (only skip if truly empty)
   if (!apellido || !nombre || !empresa) {
     return { isValid: false, reason: 'Campos obligatorios faltantes (apellido, nombre, empresa)' };
   }
 
-  // Skip header rows or observation rows
+  // Skip observation rows
   if (apellido.toUpperCase().includes('OBSERVACIONES') || 
       apellido.toUpperCase().includes('NOTAS') ||
       apellido.toUpperCase().includes('TOTAL')) {
@@ -51,9 +57,6 @@ const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reaso
     return { isValid: false, reason: 'ARICA COLLEGE sin listado' };
   }
 
-  // RUT can now be empty for credential-only beneficiaries
-  // No validation needed for empty RUT
-
   return { isValid: true };
 };
 
@@ -61,7 +64,7 @@ const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reaso
 const normalizeData = (row: RawExcelRow): ProcessedRow => ({
   apellido: row.APELLIDO?.toString().trim() || '',
   nombre: row.NOMBRE?.toString().trim() || '',
-  rut: cleanRut(row.RUT?.toString() || ''), // Can be empty now
+  rut: cleanRut(row.RUT?.toString() || ''),
   empresa: normalizeEmpresa(row.EMPRESA?.toString().trim() || '')
 });
 
@@ -83,7 +86,7 @@ const normalizeEmpresa = (empresa: string): string => {
   return empresa;
 };
 
-// Process Excel data with validation and normalization
+// Process Excel data with validation and normalization - NO DUPLICATE DETECTION
 export const processExcelData = (rawData: RawExcelRow[]): ProcessingResult => {
   const validRows: ProcessedRow[] = [];
   const skippedReasons: string[] = [];
@@ -114,26 +117,5 @@ export const processExcelData = (rawData: RawExcelRow[]): ProcessingResult => {
   };
 };
 
-// Remove duplicates based on RUT - but only for non-empty RUTs
-export const removeDuplicates = (data: ProcessedRow[]): { uniqueData: ProcessedRow[]; duplicateCount: number } => {
-  const seenRuts = new Set<string>();
-  const uniqueData: ProcessedRow[] = [];
-  let duplicateCount = 0;
-
-  data.forEach(row => {
-    // If RUT is empty, always include the row (no duplicate detection for credential-only users)
-    if (!row.rut || row.rut.trim() === '') {
-      uniqueData.push(row);
-    } else {
-      // For non-empty RUTs, check for duplicates
-      if (!seenRuts.has(row.rut)) {
-        seenRuts.add(row.rut);
-        uniqueData.push(row);
-      } else {
-        duplicateCount++;
-      }
-    }
-  });
-
-  return { uniqueData, duplicateCount };
-};
+// REMOVED: removeDuplicates function - no longer needed
+// All valid rows will be inserted without any duplicate checking

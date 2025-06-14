@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import * as XLSX from 'xlsx';
 
-import { processExcelData, removeDuplicates, BATCH_SIZE } from '@/utils/excelDataProcessor';
+import { processExcelData, BATCH_SIZE } from '@/utils/excelDataProcessor';
 import { UploadProgress } from './UploadProgress';
 import { FileAnalysisPreview } from './FileAnalysisPreview';
 import { UploadSummary } from './UploadSummary';
@@ -109,27 +108,23 @@ export const UploadSection: React.FC = () => {
             EMPRESA: row[3]
           }));
 
-          // Process data for analysis
+          // Process data for analysis - NO DUPLICATE REMOVAL
           const processed = processExcelData(objectData);
-          const { uniqueData, duplicateCount } = removeDuplicates(processed.validRows);
 
           // Calculate estimated processing time (rough estimate: 100ms per batch)
-          const totalBatches = Math.ceil(uniqueData.length / BATCH_SIZE);
+          const totalBatches = Math.ceil(processed.validRows.length / BATCH_SIZE);
           const estimatedTime = totalBatches * 0.5; // 0.5 seconds per batch
 
           const analysisData = {
             fileName: file.name,
             fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
             totalRows: processed.totalRows,
-            validRows: uniqueData.length,
-            skippedRows: processed.skippedRows + duplicateCount,
-            skippedReasons: [
-              ...processed.skippedReasons,
-              ...(duplicateCount > 0 ? [`${duplicateCount} filas duplicadas (mismo RUT)`] : [])
-            ],
-            previewRows: uniqueData.slice(0, 5),
+            validRows: processed.validRows.length,
+            skippedRows: processed.skippedRows,
+            skippedReasons: processed.skippedReasons,
+            previewRows: processed.validRows.slice(0, 5),
             estimatedProcessingTime: estimatedTime,
-            processedData: uniqueData
+            processedData: processed.validRows
           };
 
           setUploadState(prev => ({
@@ -179,7 +174,7 @@ export const UploadSection: React.FC = () => {
       const batch = data.slice(i, i + BATCH_SIZE);
       const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
       
-      // Insert batch - using insert instead of upsert since we're allowing empty RUTs
+      // Insert batch - insert ALL valid rows without any duplicate checking
       const { error: insertError } = await supabase
         .from('beneficiarios')
         .insert(batch);
@@ -231,11 +226,8 @@ export const UploadSection: React.FC = () => {
         validRows: uploadState.analysisData.validRows,
         processedRows: processedCount,
         skippedRows: uploadState.analysisData.skippedRows,
-        duplicateRows: uploadState.analysisData.skippedReasons
-          .find((reason: string) => reason.includes('duplicadas'))
-          ?.match(/\d+/)?.[0] || 0,
-        skippedReasons: uploadState.analysisData.skippedReasons
-          .filter((reason: string) => !reason.includes('duplicadas')),
+        duplicateRows: 0, // No duplicate detection anymore
+        skippedReasons: uploadState.analysisData.skippedReasons,
         processingTime
       };
 
@@ -351,9 +343,9 @@ export const UploadSection: React.FC = () => {
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Optimizado para archivos grandes:</strong> Esta versión puede manejar archivos con 16,000+ filas 
-                con procesamiento por lotes, validación automática y limpieza de datos. 
-                <strong>Nuevo:</strong> Ahora soporta beneficiarios sin RUT (solo credenciales).
+                <strong>Sin detección de duplicados:</strong> Esta versión insertará TODAS las filas válidas sin 
+                filtrar duplicados. Solo se omitirán filas completamente vacías o de encabezado. 
+                <strong>Nota:</strong> El RUT es opcional para beneficiarios que usan solo credenciales.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -415,10 +407,9 @@ export const UploadSection: React.FC = () => {
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Funciones automáticas:</strong> Validación de datos, manejo de instituciones especiales 
-                (COLEGIO MÉDICO, CARABINEROS, PDI), soporte para beneficiarios sin RUT (solo credenciales), 
-                y omisión automática de filas problemáticas con reporte detallado. 
-                <strong>Nota:</strong> El RUT ahora es opcional para beneficiarios que usan solo credenciales.
+                <strong>Sin filtrado de duplicados:</strong> Todas las filas válidas se insertarán sin verificar duplicados. 
+                Validación automática de datos, manejo de instituciones especiales (COLEGIO MÉDICO, CARABINEROS, PDI), 
+                y omisión automática solo de filas vacías o de encabezado.
               </AlertDescription>
             </Alert>
           </div>
