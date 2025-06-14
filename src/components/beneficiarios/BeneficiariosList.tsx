@@ -71,29 +71,30 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12">#</TableHead>
                   <TableHead>RUT</TableHead>
-                  <TableHead>Nombre Completo</TableHead>
+                  <TableHead>Apellido</TableHead>
+                  <TableHead>Nombre</TableHead>
                   <TableHead>Empresa</TableHead>
-                  <TableHead className="flex items-center space-x-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>Fecha Registro</span>
-                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {beneficiarios.map((beneficiario) => (
+                {beneficiarios.map((beneficiario, index) => (
                   <TableRow key={beneficiario.id} className="hover:bg-gray-50">
+                    <TableCell className="font-medium text-gray-500">
+                      {index + 1}
+                    </TableCell>
                     <TableCell className="font-medium">
                       {beneficiario.rut}
                     </TableCell>
                     <TableCell>
-                      {`${beneficiario.nombre} ${beneficiario.apellido}`}
+                      {beneficiario.apellido}
+                    </TableCell>
+                    <TableCell>
+                      {beneficiario.nombre}
                     </TableCell>
                     <TableCell>
                       {beneficiario.empresa}
-                    </TableCell>
-                    <TableCell className="text-gray-500">
-                      {formatDate(beneficiario.created_at)}
                     </TableCell>
                   </TableRow>
                 ))}

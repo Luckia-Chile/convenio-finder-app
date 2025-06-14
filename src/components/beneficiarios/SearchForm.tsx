@@ -15,13 +15,13 @@ interface SearchFormProps {
 
 export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchType, setSearchType] = useState('all');
+  const [searchType, setSearchType] = useState('general');
   const { toast } = useToast();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!searchTerm.trim() && searchType !== 'all') {
+    if (!searchTerm.trim() && searchType !== 'general') {
       toast({
         variant: "destructive",
         title: "Error",
@@ -83,7 +83,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }
 
   const handleClear = () => {
     setSearchTerm('');
-    setSearchType('all');
+    setSearchType('general');
     onSearch([]);
   };
 
@@ -97,10 +97,10 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }
               <SelectValue placeholder="Selecciona el tipo" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los campos</SelectItem>
-              <SelectItem value="rut">RUT</SelectItem>
-              <SelectItem value="nombre">Nombre/Apellido</SelectItem>
-              <SelectItem value="empresa">Empresa</SelectItem>
+              <SelectItem value="general">Búsqueda General</SelectItem>
+              <SelectItem value="rut">RUT del Beneficiario</SelectItem>
+              <SelectItem value="nombre">Nombre del Beneficiario</SelectItem>
+              <SelectItem value="empresa">Nombre de Empresa</SelectItem>
             </SelectContent>
           </Select>
         </div>

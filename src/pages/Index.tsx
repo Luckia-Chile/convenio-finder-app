@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Header } from '@/components/layout/Header';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -7,9 +7,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, Search, FileText, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const { user } = useAuth();
+  const [beneficiariosCount, setBeneficiariosCount] = useState(0);
+
+  useEffect(() => {
+    const fetchBeneficiariosCount = async () => {
+      if (user) {
+        const { count } = await supabase
+          .from('beneficiarios')
+          .select('*', { count: 'exact', head: true });
+        setBeneficiariosCount(count || 0);
+      }
+    };
+
+    fetchBeneficiariosCount();
+  }, [user]);
 
   // Show login link if user is not authenticated
   if (!user) {
@@ -111,15 +126,15 @@ const Index = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
               <div className="p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">0</div>
+                <div className="text-2xl font-bold text-blue-600">-</div>
                 <div className="text-sm text-gray-600">Archivos Subidos</div>
               </div>
               <div className="p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">0</div>
+                <div className="text-2xl font-bold text-green-600">{beneficiariosCount.toLocaleString()}</div>
                 <div className="text-sm text-gray-600">Beneficiarios Registrados</div>
               </div>
               <div className="p-4 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">0</div>
+                <div className="text-2xl font-bold text-purple-600">-</div>
                 <div className="text-sm text-gray-600">Convenios Activos</div>
               </div>
             </div>
