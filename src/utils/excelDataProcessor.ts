@@ -1,3 +1,4 @@
+
 interface RawExcelRow {
   [key: string]: any;
 }
@@ -18,7 +19,7 @@ interface ProcessingResult {
 
 export const BATCH_SIZE = 500;
 
-// Clean and format RUT
+// Clean and format RUT - now allows empty RUT
 const cleanRut = (rut: string): string => {
   if (!rut) return '';
   // Remove dots, hyphens, and spaces, keep only numbers and K
@@ -32,9 +33,9 @@ const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reaso
   const rut = row.RUT?.toString().trim() || '';
   const empresa = row.EMPRESA?.toString().trim() || '';
 
-  // Check for missing required fields
+  // Check for missing required fields (RUT is no longer required)
   if (!apellido || !nombre || !empresa) {
-    return { isValid: false, reason: 'Campos obligatorios faltantes' };
+    return { isValid: false, reason: 'Campos obligatorios faltantes (apellido, nombre, empresa)' };
   }
 
   // Skip header rows or observation rows
@@ -44,16 +45,14 @@ const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reaso
     return { isValid: false, reason: 'Fila de observaciones/notas' };
   }
 
-  // Handle special institution cases
+  // Handle special institution cases - ARICA COLLEGE without listing is still valid
   if (empresa.toUpperCase().includes('ARICA COLLEGE') && 
       (apellido.toUpperCase().includes('SIN LISTADO') || nombre.toUpperCase().includes('SIN LISTADO'))) {
     return { isValid: false, reason: 'ARICA COLLEGE sin listado' };
   }
 
-  // Missing RUT validation
-  if (!rut || rut.trim() === '' || rut.toUpperCase().includes('SIN RUT')) {
-    return { isValid: false, reason: 'RUT faltante' };
-  }
+  // RUT can now be empty for credential-only beneficiaries
+  // No validation needed for empty RUT
 
   return { isValid: true };
 };
@@ -62,7 +61,7 @@ const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reaso
 const normalizeData = (row: RawExcelRow): ProcessedRow => ({
   apellido: row.APELLIDO?.toString().trim() || '',
   nombre: row.NOMBRE?.toString().trim() || '',
-  rut: cleanRut(row.RUT?.toString() || ''),
+  rut: cleanRut(row.RUT?.toString() || ''), // Can be empty now
   empresa: normalizeEmpresa(row.EMPRESA?.toString().trim() || '')
 });
 
@@ -115,18 +114,24 @@ export const processExcelData = (rawData: RawExcelRow[]): ProcessingResult => {
   };
 };
 
-// Remove duplicates based on RUT
+// Remove duplicates based on RUT - but only for non-empty RUTs
 export const removeDuplicates = (data: ProcessedRow[]): { uniqueData: ProcessedRow[]; duplicateCount: number } => {
   const seenRuts = new Set<string>();
   const uniqueData: ProcessedRow[] = [];
   let duplicateCount = 0;
 
   data.forEach(row => {
-    if (!seenRuts.has(row.rut)) {
-      seenRuts.add(row.rut);
+    // If RUT is empty, always include the row (no duplicate detection for credential-only users)
+    if (!row.rut || row.rut.trim() === '') {
       uniqueData.push(row);
     } else {
-      duplicateCount++;
+      // For non-empty RUTs, check for duplicates
+      if (!seenRuts.has(row.rut)) {
+        seenRuts.add(row.rut);
+        uniqueData.push(row);
+      } else {
+        duplicateCount++;
+      }
     }
   });
 

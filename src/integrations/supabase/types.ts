@@ -16,7 +16,7 @@ export type Database = {
           empresa: string
           id: string
           nombre: string
-          rut: string
+          rut: string | null
         }
         Insert: {
           apellido: string
@@ -24,7 +24,7 @@ export type Database = {
           empresa: string
           id?: string
           nombre: string
-          rut: string
+          rut?: string | null
         }
         Update: {
           apellido?: string
@@ -32,7 +32,7 @@ export type Database = {
           empresa?: string
           id?: string
           nombre?: string
-          rut?: string
+          rut?: string | null
         }
         Relationships: []
       }

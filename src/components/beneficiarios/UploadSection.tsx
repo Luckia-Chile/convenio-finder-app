@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -178,10 +179,10 @@ export const UploadSection: React.FC = () => {
       const batch = data.slice(i, i + BATCH_SIZE);
       const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
       
-      // Insert batch using upsert for better performance
+      // Insert batch - using insert instead of upsert since we're allowing empty RUTs
       const { error: insertError } = await supabase
         .from('beneficiarios')
-        .upsert(batch, { onConflict: 'rut' });
+        .insert(batch);
 
       if (insertError) {
         throw new Error(`Error al insertar lote ${currentBatch}: ${insertError.message}`);
@@ -351,7 +352,8 @@ export const UploadSection: React.FC = () => {
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 <strong>Optimizado para archivos grandes:</strong> Esta versión puede manejar archivos con 16,000+ filas 
-                con procesamiento por lotes, validación automática y limpieza de datos.
+                con procesamiento por lotes, validación automática y limpieza de datos. 
+                <strong>Nuevo:</strong> Ahora soporta beneficiarios sin RUT (solo credenciales).
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -403,8 +405,8 @@ export const UploadSection: React.FC = () => {
               <div className="p-2 bg-gray-50 rounded text-center">
                 <span className="text-sm font-medium">2. NOMBRE</span>
               </div>
-              <div className="p-2 bg-gray-50 rounded text-center">
-                <span className="text-sm font-medium">3. RUT</span>
+              <div className="p-2 bg-green-50 rounded text-center">
+                <span className="text-sm font-medium">3. RUT (Opcional)</span>
               </div>
               <div className="p-2 bg-gray-50 rounded text-center">
                 <span className="text-sm font-medium">4. EMPRESA</span>
@@ -413,9 +415,10 @@ export const UploadSection: React.FC = () => {
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Funciones automáticas:</strong> Validación de datos, eliminación de duplicados, 
-                manejo de instituciones especiales (COLEGIO MÉDICO, CARABINEROS, PDI), y omisión automática 
-                de filas problemáticas con reporte detallado.
+                <strong>Funciones automáticas:</strong> Validación de datos, manejo de instituciones especiales 
+                (COLEGIO MÉDICO, CARABINEROS, PDI), soporte para beneficiarios sin RUT (solo credenciales), 
+                y omisión automática de filas problemáticas con reporte detallado. 
+                <strong>Nota:</strong> El RUT ahora es opcional para beneficiarios que usan solo credenciales.
               </AlertDescription>
             </Alert>
           </div>
