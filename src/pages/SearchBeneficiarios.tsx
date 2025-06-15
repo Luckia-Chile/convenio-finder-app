@@ -1,5 +1,8 @@
+// src/pages/SearchBeneficiarios.tsx
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRole } from '@/hooks/useRole'; // IMPORT DIRECTO
+import { AdminOnly } from '@/components/auth/RoleGuard'; // IMPORT DIRECTO
 import { Header } from '@/components/layout/Header';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { SearchForm } from '@/components/beneficiarios/SearchForm';
@@ -21,6 +24,7 @@ const SearchBeneficiarios = () => {
   const [hasMoreResults, setHasMoreResults] = useState(false);
   
   const { toast } = useToast();
+  const { isAdmin } = useRole(); // USAR HOOK DIRECTAMENTE
 
   // Función para cargar más resultados manteniendo los filtros actuales
   const handleLoadMore = async () => {
@@ -91,6 +95,9 @@ const SearchBeneficiarios = () => {
     }
   };
 
+  // Determinar qué pestañas mostrar
+  const shouldShowUploadTab = isAdmin;
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50">
@@ -99,23 +106,31 @@ const SearchBeneficiarios = () => {
         <main className="max-w-7xl mx-auto py-8 px-4">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Gestión de Beneficiarios
+              {isAdmin ? 'Gestión de Beneficiarios' : 'Búsqueda de Beneficiarios'}
             </h2>
             <p className="text-gray-600">
-              Busca beneficiarios existentes o sube nuevos archivos Excel con información de convenios.
+              {isAdmin 
+                ? 'Busca beneficiarios existentes o sube nuevos archivos Excel con información de convenios.'
+                : 'Busca beneficiarios existentes en el sistema.'
+              }
             </p>
           </div>
 
+          {/* Tabs con protección condicional */}
           <Tabs defaultValue="search" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className={`grid w-full ${shouldShowUploadTab ? 'grid-cols-2' : 'grid-cols-1'}`}>
               <TabsTrigger value="search" className="flex items-center space-x-2">
                 <Search className="h-4 w-4" />
                 <span>Buscar Beneficiarios</span>
               </TabsTrigger>
-              <TabsTrigger value="upload" className="flex items-center space-x-2">
-                <Upload className="h-4 w-4" />
-                <span>Subir Archivos</span>
-              </TabsTrigger>
+              
+              {/* Pestaña Upload solo para admins */}
+              {shouldShowUploadTab && (
+                <TabsTrigger value="upload" className="flex items-center space-x-2">
+                  <Upload className="h-4 w-4" />
+                  <span>Subir Archivos</span>
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="search" className="space-y-6">
@@ -145,9 +160,14 @@ const SearchBeneficiarios = () => {
               />
             </TabsContent>
 
-            <TabsContent value="upload">
-              <UploadSection />
-            </TabsContent>
+            {/* TabContent Upload con protección */}
+            {shouldShowUploadTab && (
+              <TabsContent value="upload">
+                <AdminOnly showMessage={true}>
+                  <UploadSection />
+                </AdminOnly>
+              </TabsContent>
+            )}
           </Tabs>
         </main>
       </div>
