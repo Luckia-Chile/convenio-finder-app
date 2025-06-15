@@ -1,25 +1,428 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>convenio-finder-app</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-
-    <meta property="og:title" content="convenio-finder-app" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-    <meta name="google" content="notranslate">
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  
+  <!-- Mobile Optimization Meta Tags CRÍTICAS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no, email=no, address=no" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="msapplication-TileColor" content="#2563eb" />
+  <meta name="apple-mobile-web-app-title" content="Sistema Convenios" />
+  <meta name="application-name" content="Sistema Convenios" />
+  
+  <!-- SEO Optimizado -->
+  <meta name="description" content="Sistema de gestión para consulta de convenios y beneficiarios. Plataforma responsive optimizada para búsqueda rápida y carga de archivos Excel." />
+  <meta name="keywords" content="convenios, beneficiarios, consulta, gestión, excel, búsqueda, responsive, móvil" />
+  <meta name="author" content="Sistema de Convenios" />
+  
+  <!-- Anti-translation para proteger datos -->
+  <meta name="google" content="notranslate">
+  
+  <!-- Favicons optimizados -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+  <!-- Critical CSS inlined para performance -->
+  <style>
+    /* Reset y base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f9fafb 0%, #e5f3ff 100%);
+      color: #111827;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overscroll-behavior: none;
+    }
+    
+    /* Prevent layout shift */
+    #root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Loading skeleton con animación de lujo */
+    .loading-skeleton {
+      background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    
+    /* Animación para progress bars */
+    @keyframes progress-shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .animate-shimmer {
+      animation: progress-shimmer 1.5s infinite;
+    }
+    
+    /* Touch-friendly scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(241, 245, 249, 0.8);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #94a3b8, #64748b);
+    }
+    
+    /* Mobile específico */
+    @media (max-width: 768px) {
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      
+      /* Optimizaciones táctiles */
+      * {
+        -webkit-tap-highlight-color: rgba(37, 99, 235, 0.1);
+        -webkit-touch-callout: none;
+      }
+      
+      /* Prevenir zoom en inputs (iOS Safari) */
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+    }
+    
+    /* Reduce motion para accesibilidad */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      
+      .loading-skeleton {
+        animation: none;
+        background: #f3f4f6;
+      }
+    }
+    
+    /* Dark mode detection */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, #111827 0%, #1e293b 100%);
+        color: #f9fafb;
+      }
+    }
+    
+    /* Luxury loading screen */
+    .initial-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f9fafb 0%, #e5f3ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(10px);
+    }
+    
+    .initial-loading .spinner-container {
+      text-align: center;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .initial-loading .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #2563eb, #3b82f6, #60a5fa);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 32px;
+      box-shadow: 
+        0 25px 50px -12px rgba(37, 99, 235, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .initial-loading .logo::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: logoShine 2s infinite;
+    }
+    
+    .initial-loading .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid transparent;
+      border-top: 6px solid #2563eb;
+      border-right: 6px solid #3b82f6;
+      border-radius: 50%;
+      animation: luxurySpin 1s linear infinite;
+      margin: 0 auto 24px;
+      position: relative;
+    }
+    
+    .initial-loading .spinner::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -6px;
+      border: 6px solid transparent;
+      border-left: 6px solid #60a5fa;
+      border-radius: 50%;
+      animation: luxurySpin 1.5s linear infinite reverse;
+    }
+    
+    .initial-loading .title {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #1f2937, #2563eb, #3b82f6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      letter-spacing: -0.025em;
+    }
+    
+    .initial-loading .subtitle {
+      font-size: 16px;
+      color: #6b7280;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+    
+    @keyframes luxurySpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeInUp {
+      0% { 
+        opacity: 0; 
+        transform: translateY(30px); 
+      }
+      100% { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+    
+    @keyframes logoShine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    /* Safe area para dispositivos con notch */
+    body {
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+    
+    /* Optimizaciones de texto */
+    .notranslate {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+    
+    /* Mejoras de performance */
+    img, video {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    /* Utility classes críticas */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+  
+  <title>Sistema de Convenios - Gestión Inteligente</title>
+</head>
+<body>
+  <!-- Luxury loading screen -->
+  <div id="initial-loading" class="initial-loading">
+    <div class="spinner-container">
+      <div class="logo">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 1L3 5L12 9L21 5L12 1Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 17L12 21L21 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 12L12 16L21 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="spinner"></div>
+      <div class="title">Sistema de Convenios</div>
+      <div class="subtitle">Cargando experiencia optimizada...</div>
+    </div>
+  </div>
+  
+  <!-- Main app container -->
+  <div id="root"></div>
+  
+  <!-- Performance optimized scripts -->
+  <script>
+    // Performance timing
+    const startTime = performance.now();
+    
+    // Enhanced loading experience
+    document.addEventListener('DOMContentLoaded', function() {
+      const loadingScreen = document.getElementById('initial-loading');
+      if (loadingScreen) {
+        // Mínimo tiempo para experiencia suave
+        const minLoadTime = 1200; // 1.2 segundos
+        const elapsed = performance.now() - startTime;
+        const remainingTime = Math.max(0, minLoadTime - elapsed);
+        
+        setTimeout(() => {
+          loadingScreen.style.opacity = '0';
+          loadingScreen.style.transform = 'scale(0.95)';
+          loadingScreen.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          setTimeout(() => {
+            loadingScreen.remove();
+            console.log('🎉 Sistema de Convenios cargado exitosamente');
+          }, 600);
+        }, remainingTime);
+      }
+    });
+    
+    // iOS Safari optimizations
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      // Prevenir zoom en inputs
+      const viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (viewportMeta) {
+        let content = viewportMeta.getAttribute('content');
+        
+        document.addEventListener('focusin', (e) => {
+          if (e.target.matches('input, select, textarea')) {
+            viewportMeta.setAttribute('content', content + ', user-scalable=no');
+          }
+        });
+        
+        document.addEventListener('focusout', () => {
+          viewportMeta.setAttribute('content', content);
+        });
+      }
+      
+      // Prevenir overscroll
+      document.addEventListener('touchmove', (e) => {
+        if (e.target.closest('.overflow-scroll, .overflow-auto')) return;
+        e.preventDefault();
+      }, { passive: false });
+    }
+    
+    // Performance monitoring
+    window.addEventListener('load', () => {
+      if ('performance' in window) {
+        setTimeout(() => {
+          const perfData = window.performance.timing;
+          const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+          const firstPaint = performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint');
+          
+          console.log('📊 Performance Metrics:');
+          console.log(`   ⏱️  Page load: ${pageLoadTime}ms`);
+          if (firstPaint) {
+            console.log(`   🎨 First paint: ${firstPaint.startTime.toFixed(2)}ms`);
+          }
+          
+          // Advertir si el rendimiento es lento
+          if (pageLoadTime > 3000) {
+            console.warn('⚠️  Carga lenta detectada. Considera optimizar la conexión.');
+          }
+        }, 0);
+      }
+    });
+    
+    // Network status monitoring
+    function updateNetworkStatus() {
+      const isOnline = navigator.onLine;
+      console.log(`📡 Estado de red: ${isOnline ? 'En línea ✅' : 'Sin conexión ❌'}`);
+      
+      // Mostrar indicador visual si es necesario
+      document.body.setAttribute('data-network-status', isOnline ? 'online' : 'offline');
+    }
+    
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    updateNetworkStatus(); // Estado inicial
+    
+    // Memory usage monitoring (desarrollo)
+    if (process.env.NODE_ENV === 'development' && 'memory' in performance) {
+      setInterval(() => {
+        const memory = performance.memory;
+        const usedMB = (memory.usedJSHeapSize / 1024 / 1024).toFixed(2);
+        if (memory.usedJSHeapSize > 50 * 1024 * 1024) { // 50MB
+          console.warn(`🚨 Alto uso de memoria: ${usedMB}MB`);
+        }
+      }, 30000);
+    }
+    
+    // Prefetch crítico para rutas principales
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        // Precargar rutas principales
+        const routes = ['/beneficiarios', '/auth'];
+        routes.forEach(route => {
+          const link = document.createElement('link');
+          link.rel = 'prefetch';
+          link.href = route;
+          document.head.appendChild(link);
+        });
+      });
+    }
+    
+    console.log('🚀 Sistema de Convenios - Versión Responsive de Lujo iniciado');
+  </script>
+  
+  <!-- Main React app -->
+  <script type="module" src="/src/main.tsx"></script>
+</body>
 </html>

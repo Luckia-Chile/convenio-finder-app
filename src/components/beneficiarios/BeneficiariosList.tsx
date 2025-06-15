@@ -1,9 +1,10 @@
+// src/components/beneficiarios/BeneficiariosList.tsx
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, MoreHorizontal, CheckCircle } from 'lucide-react';
+import { Users, Calendar, Building2, CreditCard, ChevronDown, CheckCircle, MoreHorizontal } from 'lucide-react';
 
 interface Beneficiario {
   id: string;
@@ -31,6 +32,23 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
 }) => {
   const currentCount = beneficiarios.length;
   const remainingCount = totalResults - currentCount;
+
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('es-CL', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return 'N/A';
+    }
+  };
+
+  const formatRut = (rut: string) => {
+    if (!rut || rut.trim() === '') return 'Sin RUT';
+    return rut;
+  };
 
   if (isLoading && beneficiarios.length === 0) {
     return (
@@ -91,52 +109,96 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
               </div>
             )}
 
-            {/* Tabla de resultados con protección anti-traducción */}
-            <div className="overflow-x-auto">
-              <Table translate="no" className="notranslate">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12">#</TableHead>
-                    <TableHead>RUT</TableHead>
-                    <TableHead>Apellido</TableHead>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead>Empresa</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {beneficiarios.map((beneficiario, index) => (
-                    <TableRow key={beneficiario.id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium text-gray-500">
-                        {index + 1}
-                      </TableCell>
-                      <TableCell 
-                        className="font-medium notranslate" 
-                        translate="no"
-                      >
-                        {beneficiario.rut}
-                      </TableCell>
-                      <TableCell 
-                        className="notranslate" 
-                        translate="no"
-                      >
-                        {beneficiario.apellido}
-                      </TableCell>
-                      <TableCell 
-                        className="notranslate" 
-                        translate="no"
-                      >
-                        {beneficiario.nombre}
-                      </TableCell>
-                      <TableCell 
-                        className="notranslate" 
-                        translate="no"
-                      >
-                        {beneficiario.empresa}
-                      </TableCell>
+            {/* Vista Desktop y Tablet: Tabla */}
+            <div className="hidden md:block">
+              <div className="overflow-x-auto">
+                <Table translate="no" className="notranslate">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">#</TableHead>
+                      <TableHead>RUT</TableHead>
+                      <TableHead>Apellido</TableHead>
+                      <TableHead>Nombre</TableHead>
+                      <TableHead>Empresa</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {beneficiarios.map((beneficiario, index) => (
+                      <TableRow key={beneficiario.id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium text-gray-500">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell 
+                          className="font-medium notranslate" 
+                          translate="no"
+                        >
+                          {formatRut(beneficiario.rut)}
+                        </TableCell>
+                        <TableCell 
+                          className="notranslate" 
+                          translate="no"
+                        >
+                          {beneficiario.apellido}
+                        </TableCell>
+                        <TableCell 
+                          className="notranslate" 
+                          translate="no"
+                        >
+                          {beneficiario.nombre}
+                        </TableCell>
+                        <TableCell 
+                          className="notranslate" 
+                          translate="no"
+                        >
+                          {beneficiario.empresa}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            {/* Vista Mobile: Lista simple sin cards complejas */}
+            <div className="md:hidden space-y-3">
+              {beneficiarios.map((beneficiario, index) => (
+                <div 
+                  key={beneficiario.id} 
+                  className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
+                >
+                  {/* Header simple */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-500">#{index + 1}</span>
+                    <span className="text-xs text-gray-400">
+                      {formatDate(beneficiario.created_at)}
+                    </span>
+                  </div>
+                  
+                  {/* Información básica */}
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-xs text-gray-500 uppercase tracking-wide">Nombre</span>
+                      <p className="font-medium text-gray-900" translate="no">
+                        {beneficiario.apellido}, {beneficiario.nombre}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <span className="text-xs text-gray-500 uppercase tracking-wide">RUT</span>
+                      <p className="font-medium text-gray-900" translate="no">
+                        {formatRut(beneficiario.rut)}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <span className="text-xs text-gray-500 uppercase tracking-wide">Empresa</span>
+                      <p className="font-medium text-gray-900" translate="no">
+                        {beneficiario.empresa}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Botón Cargar más resultados */}
