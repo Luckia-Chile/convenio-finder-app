@@ -32,31 +32,32 @@ const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reaso
   const rut = row.RUT?.toString().trim() || '';
   const empresa = row.EMPRESA?.toString().trim() || '';
 
-  // Skip header rows
+  // Skip header rows (mantener como antes)
   if (apellido.toUpperCase() === 'APELLIDO' || 
       nombre.toUpperCase() === 'NOMBRE' ||
       empresa.toUpperCase() === 'EMPRESA') {
     return { isValid: false, reason: 'Fila de encabezado' };
   }
 
-  // Check for missing required fields (only skip if truly empty)
-  if (!apellido || !nombre || !empresa) {
-    return { isValid: false, reason: 'Campos obligatorios faltantes (apellido, nombre, empresa)' };
+  // NUEVA LÓGICA: Solo rechazar si TODAS las celdas están completamente vacías
+  if (!apellido && !nombre && !rut && !empresa) {
+    return { isValid: false, reason: 'Fila completamente vacía' };
   }
 
-  // Skip observation rows
+  // Skip observation rows (mantener como antes)
   if (apellido.toUpperCase().includes('OBSERVACIONES') || 
       apellido.toUpperCase().includes('NOTAS') ||
       apellido.toUpperCase().includes('TOTAL')) {
     return { isValid: false, reason: 'Fila de observaciones/notas' };
   }
 
-  // Handle special institution cases - ARICA COLLEGE without listing is still valid
+  // Handle special institution cases (mantener como antes)
   if (empresa.toUpperCase().includes('ARICA COLLEGE') && 
       (apellido.toUpperCase().includes('SIN LISTADO') || nombre.toUpperCase().includes('SIN LISTADO'))) {
     return { isValid: false, reason: 'ARICA COLLEGE sin listado' };
   }
 
+  // AHORA: Cualquier fila con al menos UN dato se considera válida
   return { isValid: true };
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,9 +10,14 @@ import { useToast } from '@/hooks/use-toast';
 interface SearchFormProps {
   onSearch: (results: any[]) => void;
   setIsLoading: (loading: boolean) => void;
+  onSearchStateChange?: (params: any, totalResults: number, hasMore: boolean) => void;
 }
 
-export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }) => {
+export const SearchForm: React.FC<SearchFormProps> = ({ 
+  onSearch, 
+  setIsLoading,
+  onSearchStateChange 
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('general');
   const { toast } = useToast();
@@ -33,8 +37,10 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }
     setIsLoading(true);
     
     try {
-      let query = supabase.from('beneficiarios').select('*');
+      const INITIAL_BATCH_SIZE = 200;
+      let query = supabase.from('beneficiarios').select('*', { count: 'exact' });
 
+      // Aplicar filtros según el tipo de búsqueda
       if (searchTerm.trim()) {
         switch (searchType) {
           case 'rut':
@@ -51,7 +57,10 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }
         }
       }
 
-      const { data, error } = await query.order('created_at', { ascending: false }).limit(100);
+      // Obtener primeros 200 resultados con count total
+      const { data, error, count } = await query
+        .order('created_at', { ascending: false })
+        .range(0, INITIAL_BATCH_SIZE - 1);
 
       if (error) {
         console.error('Error searching beneficiarios:', error);
@@ -63,12 +72,40 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }
         return;
       }
 
+      const totalResults = count || 0;
+      const returnedResults = data?.length || 0;
+      const hasMoreResults = returnedResults < totalResults;
+
+      // Actualizar resultados
       onSearch(data || []);
       
-      toast({
-        title: "Búsqueda completada",
-        description: `Se encontraron ${data?.length || 0} beneficiarios.`,
-      });
+      // Comunicar estado de paginación al componente padre
+      if (onSearchStateChange) {
+        onSearchStateChange(
+          { searchTerm, searchType }, 
+          totalResults, 
+          hasMoreResults
+        );
+      }
+      
+      // Mensaje informativo según resultados
+      if (totalResults === 0) {
+        toast({
+          title: "Sin resultados",
+          description: "No se encontraron beneficiarios con esos criterios.",
+        });
+      } else if (hasMoreResults) {
+        toast({
+          title: "Búsqueda completada",
+          description: `Se encontraron ${totalResults.toLocaleString()} beneficiarios, mostrando primeros ${returnedResults}.`,
+        });
+      } else {
+        toast({
+          title: "Búsqueda completada",
+          description: `Se encontraron ${totalResults.toLocaleString()} beneficiarios.`,
+        });
+      }
+
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -85,6 +122,11 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }
     setSearchTerm('');
     setSearchType('general');
     onSearch([]);
+    
+    // Limpiar estado de paginación
+    if (onSearchStateChange) {
+      onSearchStateChange(null, 0, false);
+    }
   };
 
   return (
@@ -113,7 +155,8 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, setIsLoading }
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Ingresa el término a buscar..."
-            className="w-full"
+            className="w-full notranslate"
+            translate="no"
           />
         </div>
 

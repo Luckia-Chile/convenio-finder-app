@@ -1,55 +1,50 @@
-
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, User } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { LogOut, Shield } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { user, signOut } = useAuth();
-  const { toast } = useToast();
 
   const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast({
-        title: "Sesión cerrada",
-        description: "Has cerrado sesión correctamente.",
-      });
-    } catch (error) {
-      console.error('Error signing out:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Error al cerrar sesión.",
-      });
-    }
+    await signOut();
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 py-3">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <h1 className="text-xl font-bold text-gray-900">Sistema de Convenios</h1>
-        </div>
-        
-        {user && (
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <User className="h-4 w-4" />
-              <span>{user.email}</span>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSignOut}
-              className="flex items-center space-x-1"
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Cerrar Sesión</span>
-            </Button>
+    <header className="bg-white shadow-sm border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo/Title */}
+          <div className="flex items-center space-x-3">
+            <Shield className="h-8 w-8 text-blue-600" />
+            <h1 className="text-xl font-bold text-gray-900">
+              Sistema de Convenios
+            </h1>
           </div>
-        )}
+
+          {/* User Info */}
+          <div className="flex items-center space-x-4">
+            {user && (
+              <>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900">
+                    {user.email}
+                  </p>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-1"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Cerrar Sesión</span>
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );

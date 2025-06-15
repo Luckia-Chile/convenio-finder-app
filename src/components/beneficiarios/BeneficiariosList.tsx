@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Users, MoreHorizontal, CheckCircle } from 'lucide-react';
 
 interface Beneficiario {
   id: string;
@@ -17,21 +17,22 @@ interface Beneficiario {
 interface BeneficiariosListProps {
   beneficiarios: Beneficiario[];
   isLoading: boolean;
+  onLoadMore?: () => void;
+  hasMore?: boolean;
+  totalResults?: number;
 }
 
 export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({ 
   beneficiarios, 
-  isLoading 
+  isLoading,
+  onLoadMore,
+  hasMore = false,
+  totalResults = 0
 }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-CL', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+  const currentCount = beneficiarios.length;
+  const remainingCount = totalResults - currentCount;
 
-  if (isLoading) {
+  if (isLoading && beneficiarios.length === 0) {
     return (
       <Card>
         <CardContent className="flex items-center justify-center py-8">
@@ -53,7 +54,7 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
             <span>Resultados de Búsqueda</span>
           </CardTitle>
           <Badge variant="secondary" className="text-sm">
-            {beneficiarios.length} beneficiarios encontrados
+            {currentCount.toLocaleString()} beneficiarios{totalResults > 0 && ` de ${totalResults.toLocaleString()}`}
           </Badge>
         </div>
       </CardHeader>
@@ -67,39 +68,113 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">#</TableHead>
-                  <TableHead>RUT</TableHead>
-                  <TableHead>Apellido</TableHead>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Empresa</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {beneficiarios.map((beneficiario, index) => (
-                  <TableRow key={beneficiario.id} className="hover:bg-gray-50">
-                    <TableCell className="font-medium text-gray-500">
-                      {index + 1}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {beneficiario.rut}
-                    </TableCell>
-                    <TableCell>
-                      {beneficiario.apellido}
-                    </TableCell>
-                    <TableCell>
-                      {beneficiario.nombre}
-                    </TableCell>
-                    <TableCell>
-                      {beneficiario.empresa}
-                    </TableCell>
+          <div className="space-y-4">
+            {/* Indicador de progreso de carga */}
+            {totalResults > 0 && (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">
+                    📊 Mostrando {currentCount.toLocaleString()} de {totalResults.toLocaleString()} beneficiarios
+                  </span>
+                  {hasMore && (
+                    <span className="text-blue-600 font-medium">
+                      {remainingCount.toLocaleString()} más por cargar
+                    </span>
+                  )}
+                  {!hasMore && currentCount > 0 && (
+                    <span className="text-green-600 font-medium flex items-center space-x-1">
+                      <CheckCircle className="h-4 w-4" />
+                      <span>Completado</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Tabla de resultados con protección anti-traducción */}
+            <div className="overflow-x-auto">
+              <Table translate="no" className="notranslate">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">#</TableHead>
+                    <TableHead>RUT</TableHead>
+                    <TableHead>Apellido</TableHead>
+                    <TableHead>Nombre</TableHead>
+                    <TableHead>Empresa</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {beneficiarios.map((beneficiario, index) => (
+                    <TableRow key={beneficiario.id} className="hover:bg-gray-50">
+                      <TableCell className="font-medium text-gray-500">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell 
+                        className="font-medium notranslate" 
+                        translate="no"
+                      >
+                        {beneficiario.rut}
+                      </TableCell>
+                      <TableCell 
+                        className="notranslate" 
+                        translate="no"
+                      >
+                        {beneficiario.apellido}
+                      </TableCell>
+                      <TableCell 
+                        className="notranslate" 
+                        translate="no"
+                      >
+                        {beneficiario.nombre}
+                      </TableCell>
+                      <TableCell 
+                        className="notranslate" 
+                        translate="no"
+                      >
+                        {beneficiario.empresa}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Botón Cargar más resultados */}
+            {hasMore && (
+              <div className="flex flex-col items-center space-y-3 pt-4 border-t">
+                <Button 
+                  onClick={onLoadMore} 
+                  disabled={isLoading}
+                  variant="outline" 
+                  className="px-6"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                      <span>Cargando...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span>Cargar más resultados</span>
+                    </div>
+                  )}
+                </Button>
+                <p className="text-sm text-gray-500">
+                  {remainingCount.toLocaleString()} beneficiarios restantes
+                </p>
+              </div>
+            )}
+
+            {/* Mensaje de completitud */}
+            {!hasMore && currentCount > 0 && totalResults > 200 && (
+              <div className="flex items-center justify-center space-x-2 pt-4 border-t">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                <span className="text-green-600 font-medium">
+                  ✅ Se han cargado todos los {totalResults.toLocaleString()} beneficiarios
+                </span>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

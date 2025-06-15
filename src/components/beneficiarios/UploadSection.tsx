@@ -202,11 +202,6 @@ export const UploadSection: React.FC = () => {
 
       // Small delay to prevent UI freezing
       await new Promise(resolve => setTimeout(resolve, 10));
-      
-      // Force garbage collection hint (if available)
-      if (global.gc) {
-        global.gc();
-      }
     }
 
     return processedRows;
