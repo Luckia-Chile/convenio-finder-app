@@ -1,4 +1,3 @@
-// src/components/beneficiarios/BeneficiariosList.tsx
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -83,10 +82,10 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
 
   return (
     <>
-      {/* 🚨 MODAL SÚPER IMPACTANTE - IMPOSIBLE DE IGNORAR */}
+      {/* 🚨 MODAL RESPONSIVO Y CONCISO */}
       {showInstitutionModal && detectedInstitution && (
-        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4" style={{ zIndex: 999999 }}>
-          {/* Overlay súper opaco que bloquea TODA la página */}
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-2 sm:p-4" style={{ zIndex: 999999 }}>
+          {/* Overlay */}
           <div 
             className="absolute inset-0 bg-black/90 backdrop-blur-lg"
             style={{ 
@@ -102,9 +101,9 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
             onClick={(e) => e.preventDefault()}
           />
           
-          {/* Modal SÚPER IMPACTANTE con fondo institucional */}
+          {/* Modal responsivo */}
           <div 
-            className={`relative rounded-3xl shadow-2xl w-full max-w-lg mx-auto animate-in zoom-in-95 duration-500 ring-8 ${
+            className={`relative rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto animate-in zoom-in-95 duration-500 ring-4 sm:ring-8 ${
               detectedInstitution.color.text === 'text-green-800' 
                 ? 'bg-gradient-to-br from-green-600 via-green-700 to-green-800 ring-green-400' 
                 : detectedInstitution.color.text === 'text-blue-800'
@@ -120,87 +119,64 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
             }}
           >
             
-            {/* Header IMPACTANTE con contraste fuerte */}
-            <div className="bg-white/95 backdrop-blur-sm rounded-t-3xl p-8 border-b-8 border-white">
+            {/* Header compacto */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-t-2xl sm:rounded-t-3xl p-4 sm:p-6 lg:p-8 border-b-4 sm:border-b-8 border-white">
               <div className="text-center">
-                <div className="text-7xl mb-4 animate-bounce drop-shadow-lg">
+                <div className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-4 animate-bounce drop-shadow-lg">
                   {detectedInstitution.icon}
                 </div>
-                <h2 className={`text-3xl font-black ${detectedInstitution.color.text} mb-4 drop-shadow-md`}>
+                <h2 className={`text-lg sm:text-xl lg:text-2xl font-black ${detectedInstitution.color.text} mb-2 sm:mb-4 drop-shadow-md leading-tight`}>
                   ⚠️ {detectedInstitution.displayName.toUpperCase()} ⚠️
                 </h2>
                 <Badge 
                   variant="outline" 
-                  className={`${detectedInstitution.color.bg} ${detectedInstitution.color.text} border-current font-black text-xl px-6 py-3 ring-4 ring-current/20 animate-pulse`}
+                  className={`${detectedInstitution.color.bg} ${detectedInstitution.color.text} border-current font-black text-sm sm:text-base lg:text-lg px-3 sm:px-4 lg:px-6 py-1 sm:py-2 lg:py-3 ring-2 sm:ring-4 ring-current/20 animate-pulse`}
                 >
-                  <Shield className="h-6 w-6 mr-3" />
+                  <Shield className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 mr-1 sm:mr-2" />
                   🚨 SOLO CREDENCIAL 🚨
                 </Badge>
               </div>
             </div>
 
-            {/* Contenido con fondo CONTRASTANTE */}
-            <div className="bg-white/95 backdrop-blur-sm p-8 space-y-6">
-              {/* Mensaje principal SÚPER VISIBLE */}
+            {/* Contenido principal simplificado */}
+            <div className="bg-white/95 backdrop-blur-sm p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+              
+              {/* Mensaje institucional principal */}
               <div className={`bg-gradient-to-r ${
                 detectedInstitution.color.text === 'text-green-800' 
                   ? 'from-green-100 to-green-200 border-green-500' 
                   : detectedInstitution.color.text === 'text-blue-800'
                   ? 'from-blue-100 to-blue-200 border-blue-500'
                   : 'from-red-100 to-red-200 border-red-500'
-              } rounded-xl p-6 border-l-8 ring-4 ring-current/20`}>
-                <div className="flex items-start space-x-4">
-                  <div className={`p-3 rounded-full ${detectedInstitution.color.bg} ${detectedInstitution.color.text}`}>
-                    <Info className="h-8 w-8 font-bold" />
+              } rounded-xl p-4 sm:p-6 border-l-4 sm:border-l-8 ring-2 sm:ring-4 ring-current/20`}>
+                <div className="flex items-start space-x-3 sm:space-x-4">
+                  <div className={`p-2 sm:p-3 rounded-full ${detectedInstitution.color.bg} ${detectedInstitution.color.text} flex-shrink-0`}>
+                    <Info className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8 font-bold" />
                   </div>
-                  <div>
-                    <h3 className={`font-black ${detectedInstitution.color.text} mb-3 text-2xl tracking-wide`}>
-                      🚨 AVISO CRÍTICO 🚨
+                  <div className="flex-1 min-w-0">
+                    <h3 className={`font-black ${detectedInstitution.color.text} mb-2 sm:mb-3 text-base sm:text-lg lg:text-xl tracking-wide`}>
+                      🚨 AVISO INSTITUCIONAL 🚨
                     </h3>
-                    <p className={`${detectedInstitution.color.text} font-bold leading-relaxed text-lg`}>
+                    <p className={`${detectedInstitution.color.text} font-bold leading-relaxed text-sm sm:text-base lg:text-lg`}>
                       {detectedInstitution.credentialMessage}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Procedimiento con fondo SÚPER VISIBLE */}
-              <div className="bg-gradient-to-r from-green-100 to-emerald-200 border-4 border-green-500 rounded-xl p-6 ring-4 ring-green-200">
-                <h3 className="font-black text-green-900 mb-4 flex items-center space-x-3 text-xl">
-                  <div className="p-2 bg-green-600 rounded-full">
-                    <CheckCircle className="h-6 w-6 text-white" />
-                  </div>
-                  <span>✅ PROCEDIMIENTO OBLIGATORIO:</span>
-                </h3>
-                <ul className="text-green-900 space-y-3 font-bold text-lg">
-                  <li className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-green-600 rounded-full animate-pulse"></div>
-                    <span>🆔 Verificar credencial institucional vigente</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-green-600 rounded-full animate-pulse"></div>
-                    <span>❌ NO buscar en el sistema informático</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-green-600 rounded-full animate-pulse"></div>
-                    <span>👤 Validar identidad del funcionario</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Información adicional si hay resultados */}
+              {/* Información adicional solo si hay resultados */}
               {currentCount > 0 && (
-                <div className="bg-gradient-to-r from-yellow-100 to-orange-200 border-4 border-yellow-500 rounded-xl p-6 ring-4 ring-yellow-200">
-                  <div className="flex items-start space-x-4">
-                    <div className="p-2 bg-yellow-600 rounded-full">
-                      <AlertTriangle className="h-6 w-6 text-white" />
+                <div className="bg-gradient-to-r from-yellow-100 to-orange-200 border-4 border-yellow-500 rounded-xl p-4 sm:p-6 ring-2 sm:ring-4 ring-yellow-200">
+                  <div className="flex items-start space-x-3 sm:space-x-4">
+                    <div className="p-2 bg-yellow-600 rounded-full flex-shrink-0">
+                      <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                     </div>
-                    <div>
-                      <h4 className="font-black text-yellow-900 mb-3 text-lg">⚠️ ATENCIÓN ESPECIAL:</h4>
-                      <p className="text-yellow-900 font-bold text-base">
-                        Se encontraron <span className="bg-yellow-400 px-2 py-1 rounded font-black">{currentCount} registros</span> que pueden ser personal administrativo. 
-                        <br />
-                        <span className="text-red-700 font-black">Para funcionarios operativos: SIEMPRE verificar credencial institucional.</span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-black text-yellow-900 mb-2 sm:mb-3 text-sm sm:text-base lg:text-lg">⚠️ NOTA ESPECIAL:</h4>
+                      <p className="text-yellow-900 font-bold text-xs sm:text-sm lg:text-base leading-relaxed">
+                        Se encontraron <span className="bg-yellow-400 px-1 sm:px-2 py-1 rounded font-black">{currentCount} registros</span> que pueden corresponder a personal administrativo.
+                        <br className="hidden sm:block" />
+                        <span className="text-red-700 font-black">Funcionarios operativos: verificar credencial institucional.</span>
                       </p>
                     </div>
                   </div>
@@ -208,11 +184,11 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
               )}
             </div>
 
-            {/* Footer SÚPER PROMINENTE */}
-            <div className="bg-white/95 backdrop-blur-sm rounded-b-3xl p-8">
+            {/* Footer con botón responsivo */}
+            <div className="bg-white/95 backdrop-blur-sm rounded-b-2xl sm:rounded-b-3xl p-4 sm:p-6 lg:p-8">
               <Button
                 onClick={handleCloseModal}
-                className={`w-full h-20 text-2xl font-black shadow-2xl transition-all duration-300 transform hover:scale-105 ring-8 ring-white/50 ${
+                className={`w-full h-12 sm:h-16 lg:h-20 text-base sm:text-lg lg:text-xl font-black shadow-2xl transition-all duration-300 transform hover:scale-105 ring-4 sm:ring-8 ring-white/50 ${
                   detectedInstitution.color.text === 'text-green-800' 
                     ? 'bg-gradient-to-r from-green-500 via-green-600 to-green-700 hover:from-green-600 hover:via-green-700 hover:to-green-800' 
                     : detectedInstitution.color.text === 'text-blue-800'
@@ -220,12 +196,14 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
                     : 'bg-gradient-to-r from-red-500 via-red-600 to-red-700 hover:from-red-600 hover:via-red-700 hover:to-red-800'
                 } text-white`}
               >
-                <CheckCircle className="h-8 w-8 mr-4" />
-                ✅ ENTENDIDO - CERRAR AVISO ✅
+                <CheckCircle className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8 mr-2 sm:mr-4" />
+                <span className="hidden sm:inline">✅ ENTENDIDO - CERRAR AVISO ✅</span>
+                <span className="sm:hidden">✅ ENTENDIDO ✅</span>
               </Button>
               
-              <p className="text-lg text-gray-800 text-center mt-4 font-black bg-yellow-200 px-4 py-2 rounded-lg">
-                ⚠️ DEBES CERRAR ESTE AVISO PARA CONTINUAR ⚠️
+              <p className="text-xs sm:text-sm lg:text-base text-gray-800 text-center mt-2 sm:mt-4 font-black bg-yellow-200 px-2 sm:px-4 py-1 sm:py-2 rounded-lg">
+                <span className="hidden sm:inline">⚠️ DEBES CERRAR ESTE AVISO PARA CONTINUAR ⚠️</span>
+                <span className="sm:hidden">⚠️ CERRAR PARA CONTINUAR ⚠️</span>
               </p>
             </div>
           </div>
