@@ -1,4 +1,3 @@
-// src/components/beneficiarios/SearchForm.tsx
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,11 +8,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { detectInstitution, InstitutionInfo } from '@/utils/institutionDetector';
 
 interface SearchFormProps {
   onSearch: (results: any[]) => void;
   setIsLoading: (loading: boolean) => void;
-  onSearchStateChange?: (params: any, totalResults: number, hasMore: boolean) => void;
+  onSearchStateChange?: (params: any, totalResults: number, hasMore: boolean, detectedInstitution?: InstitutionInfo) => void;
 }
 
 export const SearchForm: React.FC<SearchFormProps> = ({ 
@@ -42,10 +42,27 @@ export const SearchForm: React.FC<SearchFormProps> = ({
     setIsSearching(true);
     
     try {
+      // 🔍 NUEVA FUNCIONALIDAD: Detectar si es búsqueda de institución
+      let detectedInstitution: InstitutionInfo | undefined;
+      
+      if (searchTerm.trim()) {
+        const detection = detectInstitution(searchTerm.trim());
+        if (detection.isInstitution && detection.institution) {
+          detectedInstitution = detection.institution;
+          
+          // Toast informativo sobre la detección
+          toast({
+            title: `${detection.institution.icon} Institución detectada`,
+            description: `Búsqueda de: ${detection.institution.displayName}`,
+            duration: 3000,
+          });
+        }
+      }
+
       const INITIAL_BATCH_SIZE = 200;
       let query = supabase.from('beneficiarios').select('*', { count: 'exact' });
 
-      // Aplicar filtros según el tipo de búsqueda
+      // Aplicar filtros según el tipo de búsqueda (FUNCIONALIDAD ORIGINAL INTACTA)
       if (searchTerm.trim()) {
         switch (searchType) {
           case 'rut':
@@ -84,21 +101,31 @@ export const SearchForm: React.FC<SearchFormProps> = ({
       // Actualizar resultados
       onSearch(data || []);
       
-      // Comunicar estado de paginación al componente padre
+      // 🆕 COMUNICAR INSTITUCIÓN DETECTADA AL COMPONENTE PADRE
       if (onSearchStateChange) {
         onSearchStateChange(
           { searchTerm, searchType }, 
           totalResults, 
-          hasMoreResults
+          hasMoreResults,
+          detectedInstitution // ← NUEVA INFORMACIÓN PASADA
         );
       }
       
       // Mensaje informativo según resultados
       if (totalResults === 0) {
-        toast({
-          title: "Sin resultados",
-          description: "No se encontraron beneficiarios con esos criterios.",
-        });
+        // 🆕 MENSAJE ESPECIAL PARA INSTITUCIONES SIN RESULTADOS
+        if (detectedInstitution) {
+          toast({
+            title: `${detectedInstitution.icon} ${detectedInstitution.displayName}`,
+            description: detectedInstitution.credentialMessage,
+            duration: 6000,
+          });
+        } else {
+          toast({
+            title: "Sin resultados",
+            description: "No se encontraron beneficiarios con esos criterios.",
+          });
+        }
       } else if (hasMoreResults) {
         toast({
           title: "Búsqueda completada",
@@ -129,9 +156,9 @@ export const SearchForm: React.FC<SearchFormProps> = ({
     setSearchType('general');
     onSearch([]);
     
-    // Limpiar estado de paginación
+    // Limpiar estado de paginación (sin institución)
     if (onSearchStateChange) {
-      onSearchStateChange(null, 0, false);
+      onSearchStateChange(null, 0, false, undefined);
     }
 
     toast({
@@ -317,6 +344,17 @@ export const SearchForm: React.FC<SearchFormProps> = ({
                     <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                     <span><strong>Empresa:</strong> Incluye instituciones y organizaciones</span>
                   </div>
+                </div>
+              </div>
+              {/* 🆕 NUEVA SECCIÓN: Tips para instituciones */}
+              <div className="mt-4 pt-3 border-t border-blue-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className="text-sm font-semibold text-blue-900">🏛️ Instituciones con credencial:</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-blue-700">
+                  <span>👮‍♂️ Carabineros</span>
+                  <span>🕵️‍♂️ PDI</span>
+                  <span>⚕️ Colegio Médico</span>
                 </div>
               </div>
             </div>

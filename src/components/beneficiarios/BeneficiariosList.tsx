@@ -1,10 +1,10 @@
-// src/components/beneficiarios/BeneficiariosList.tsx
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, Calendar, Building2, CreditCard, ChevronDown, CheckCircle, MoreHorizontal } from 'lucide-react';
+import { Users, Calendar, Building2, CreditCard, ChevronDown, CheckCircle, MoreHorizontal, AlertTriangle, Info } from 'lucide-react';
+import { InstitutionInfo } from '@/utils/institutionDetector';
 
 interface Beneficiario {
   id: string;
@@ -21,6 +21,7 @@ interface BeneficiariosListProps {
   onLoadMore?: () => void;
   hasMore?: boolean;
   totalResults?: number;
+  detectedInstitution?: InstitutionInfo; // 🆕 NUEVA PROP
 }
 
 export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({ 
@@ -28,7 +29,8 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
   isLoading,
   onLoadMore,
   hasMore = false,
-  totalResults = 0
+  totalResults = 0,
+  detectedInstitution // 🆕 NUEVA PROP
 }) => {
   const currentCount = beneficiarios.length;
   const remainingCount = totalResults - currentCount;
@@ -77,13 +79,68 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
         </div>
       </CardHeader>
       <CardContent>
+        {/* 🆕 BANNER DE INSTITUCIÓN DETECTADA */}
+        {detectedInstitution && (
+          <div className={`${detectedInstitution.color.bg} ${detectedInstitution.color.border} border-l-4 rounded-lg p-4 mb-6 shadow-sm`}>
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0">
+                <div className="text-3xl">{detectedInstitution.icon}</div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Info className={`h-5 w-5 ${detectedInstitution.color.text}`} />
+                  <h3 className={`text-lg font-semibold ${detectedInstitution.color.text}`}>
+                    {detectedInstitution.displayName}
+                  </h3>
+                  <Badge variant="outline" className={`${detectedInstitution.color.bg} ${detectedInstitution.color.text} border-current`}>
+                    Solo Credencial
+                  </Badge>
+                </div>
+                <p className={`text-sm ${detectedInstitution.color.text} leading-relaxed`}>
+                  {detectedInstitution.credentialMessage}
+                </p>
+                {currentCount === 0 && (
+                  <div className="mt-3 flex items-center space-x-2">
+                    <AlertTriangle className={`h-4 w-4 ${detectedInstitution.color.text}`} />
+                    <span className={`text-sm font-medium ${detectedInstitution.color.text}`}>
+                      No es necesario buscar en el sistema - presentar credencial directamente
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {beneficiarios.length === 0 ? (
           <div className="text-center py-8">
-            <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg mb-2">No se encontraron beneficiarios</p>
-            <p className="text-gray-400">
-              Intenta con diferentes términos de búsqueda o sube un archivo Excel con nuevos datos.
-            </p>
+            {/* 🆕 MENSAJE DIFERENCIADO PARA INSTITUCIONES */}
+            {detectedInstitution ? (
+              <div className="space-y-4">
+                <div className="text-6xl">{detectedInstitution.icon}</div>
+                <div>
+                  <p className={`text-xl font-semibold ${detectedInstitution.color.text} mb-2`}>
+                    {detectedInstitution.displayName}
+                  </p>
+                  <p className="text-gray-600 max-w-md mx-auto leading-relaxed">
+                    Esta institución no requiere búsqueda en el sistema. Los funcionarios deben presentar únicamente su credencial institucional.
+                  </p>
+                </div>
+                <div className={`${detectedInstitution.color.bg} rounded-lg p-4 max-w-md mx-auto`}>
+                  <p className={`text-sm ${detectedInstitution.color.text} font-medium`}>
+                    ✅ Procedimiento: Verificar credencial institucional vigente
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg mb-2">No se encontraron beneficiarios</p>
+                <p className="text-gray-400">
+                  Intenta con diferentes términos de búsqueda o sube un archivo Excel con nuevos datos.
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
@@ -105,6 +162,19 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
                       <span>Completado</span>
                     </span>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* 🆕 MENSAJE INFORMATIVO CUANDO HAY RESULTADOS + INSTITUCIÓN */}
+            {detectedInstitution && currentCount > 0 && (
+              <div className={`${detectedInstitution.color.bg} rounded-lg p-3 border ${detectedInstitution.color.border}`}>
+                <div className="flex items-center space-x-2">
+                  <Info className={`h-4 w-4 ${detectedInstitution.color.text}`} />
+                  <span className={`text-sm ${detectedInstitution.color.text}`}>
+                    <strong>Nota:</strong> Estos registros pueden corresponder a personal administrativo. 
+                    Para funcionarios operativos, verificar credencial institucional.
+                  </span>
                 </div>
               </div>
             )}

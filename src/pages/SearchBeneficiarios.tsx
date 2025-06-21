@@ -1,4 +1,3 @@
-// src/pages/SearchBeneficiarios.tsx
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
@@ -14,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Upload, Users, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { InstitutionInfo } from '@/utils/institutionDetector';
 
 const SearchBeneficiarios = () => {
   const [searchResults, setSearchResults] = useState([]);
@@ -23,6 +23,9 @@ const SearchBeneficiarios = () => {
   const [currentSearchParams, setCurrentSearchParams] = useState<any>(null);
   const [totalResults, setTotalResults] = useState(0);
   const [hasMoreResults, setHasMoreResults] = useState(false);
+  
+  // 🆕 NUEVO ESTADO: Información de institución detectada
+  const [detectedInstitution, setDetectedInstitution] = useState<InstitutionInfo | undefined>(undefined);
   
   const { toast } = useToast();
   const { isAdmin, role } = useRole();
@@ -148,7 +151,7 @@ const SearchBeneficiarios = () => {
             </div>
           </div>
 
-          {/* Tabs con protección condicional - ARREGLADO */}
+          {/* Tabs con protección condicional */}
           <Tabs defaultValue="search" className="space-y-6">
             <div className="flex justify-center">
               <TabsList className={`grid ${isAdmin ? 'grid-cols-2 w-full max-w-md' : 'grid-cols-1 w-full max-w-xs'} h-12 bg-white shadow-lg rounded-xl border`}>
@@ -161,7 +164,7 @@ const SearchBeneficiarios = () => {
                   <span className="sm:hidden">Buscar</span>
                 </TabsTrigger>
                 
-                {/* Tab Upload SOLO para admins - CORREGIDO */}
+                {/* Tab Upload SOLO para admins */}
                 {isAdmin && (
                   <TabsTrigger 
                     value="upload" 
@@ -188,10 +191,12 @@ const SearchBeneficiarios = () => {
                   <SearchForm 
                     onSearch={setSearchResults}
                     setIsLoading={setIsLoading}
-                    onSearchStateChange={(params, total, hasMore) => {
+                    onSearchStateChange={(params, total, hasMore, institution) => {
                       setCurrentSearchParams(params);
                       setTotalResults(total);
                       setHasMoreResults(hasMore);
+                      // 🆕 CAPTURAR INSTITUCIÓN DETECTADA
+                      setDetectedInstitution(institution);
                     }}
                   />
                 </CardContent>
@@ -203,10 +208,12 @@ const SearchBeneficiarios = () => {
                 onLoadMore={handleLoadMore}
                 hasMore={hasMoreResults}
                 totalResults={totalResults}
+                // 🆕 PASAR INSTITUCIÓN DETECTADA A LA LISTA
+                detectedInstitution={detectedInstitution}
               />
             </TabsContent>
 
-            {/* Tab Content Upload SOLO para admins - CORREGIDO */}
+            {/* Tab Content Upload SOLO para admins */}
             {isAdmin && (
               <TabsContent value="upload" className="space-y-6">
                 <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl border-0 overflow-hidden">
@@ -223,7 +230,6 @@ const SearchBeneficiarios = () => {
                   </div>
                   
                   <div className="p-6">
-                    {/* COMPONENTE UPLOAD SIN AdminOnly WRAPPER que causaba problemas */}
                     <UploadSection />
                   </div>
                 </div>
