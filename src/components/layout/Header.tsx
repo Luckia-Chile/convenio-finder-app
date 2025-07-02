@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LogOut, Shield, User, Menu, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Link } from 'react-router-dom';
 
 export const Header: React.FC = () => {
   const { user, signOut } = useAuth();
@@ -14,10 +15,21 @@ export const Header: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
+      // 🧪 DEBUG TEMPORAL - Borrar después
+      console.log('🔍 handleSignOut ejecutado');
+      console.log('🔍 signOut function:', signOut);
+      console.log('🔍 user:', user);
+      
+      if (!signOut) {
+        console.error('❌ signOut function no está disponible');
+        return;
+      }
+      
       await signOut();
       setMobileMenuOpen(false);
+      console.log('✅ signOut completado');
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      console.error('❌ Error al cerrar sesión:', error);
     }
   };
 
@@ -57,11 +69,11 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           
-          {/* Logo y Título */}
-          <div className="flex items-center space-x-3 min-w-0 flex-1">
+          {/* Logo y Título CLICKEABLE */}
+          <Link to="/" className="flex items-center space-x-3 min-w-0 flex-1 group transition-all duration-200 hover:opacity-80">
             {/* Logo de Luckia */}
-            <div className="relative group flex-shrink-0">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl overflow-hidden bg-white shadow-lg group-hover:shadow-xl transition-all duration-300 p-1">
+            <div className="relative flex-shrink-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl overflow-hidden bg-white shadow-lg group-hover:shadow-xl transition-all duration-300 p-1 group-hover:scale-105">
                 <img 
                   src="/Logo_Luckia.svg" 
                   alt="Luckia Logo"
@@ -73,15 +85,15 @@ export const Header: React.FC = () => {
             </div>
             
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors duration-200">
                 <span className="hidden sm:inline">Sistema de Convenios</span>
                 <span className="sm:hidden">Convenios</span>
               </h1>
-              <p className="text-xs text-gray-500 hidden lg:block">
+              <p className="text-xs text-gray-500 hidden lg:block group-hover:text-blue-500 transition-colors duration-200">
                 Powered by Luckia
               </p>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop: Info del Usuario */}
           <div className="hidden md:flex items-center space-x-4">
@@ -124,15 +136,21 @@ export const Header: React.FC = () => {
                 <SheetHeader>
                   <div className="flex items-center justify-between">
                     <SheetTitle className="text-left flex items-center space-x-3">
-                      {/* Logo en el menú móvil */}
-                      <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shadow-md">
-                        <img 
-                          src="/Logo_Luckia.svg" 
-                          alt="Luckia Logo"
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                      <span>Mi Cuenta</span>
+                      {/* Logo en el menú móvil - CLICKEABLE */}
+                      <Link 
+                        to="/" 
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center space-x-3 group transition-all duration-200 hover:opacity-80"
+                      >
+                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shadow-md group-hover:shadow-lg transition-all duration-200">
+                          <img 
+                            src="/Logo_Luckia.svg" 
+                            alt="Luckia Logo"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <span className="group-hover:text-blue-600 transition-colors duration-200">Mi Cuenta</span>
+                      </Link>
                     </SheetTitle>
                     <SheetClose asChild>
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -156,19 +174,28 @@ export const Header: React.FC = () => {
 
                   {/* Información de empresa */}
                   <div className="p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <div className="w-6 h-6 rounded overflow-hidden">
-                        <img 
-                          src="/Logo_Luckia.svg" 
-                          alt="Luckia Logo"
-                          className="w-full h-full object-contain"
-                        />
+                    <Link 
+                      to="/" 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block group transition-all duration-200 hover:opacity-80"
+                    >
+                      <div className="flex items-center space-x-3 mb-2">
+                        <div className="w-6 h-6 rounded overflow-hidden">
+                          <img 
+                            src="/Logo_Luckia.svg" 
+                            alt="Luckia Logo"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Luckia</span>
                       </div>
-                      <span className="text-sm font-semibold text-gray-900">Luckia</span>
-                    </div>
-                    <p className="text-xs text-gray-600">
-                      Sistema de gestión de convenios empresariales
-                    </p>
+                      <p className="text-xs text-gray-600 group-hover:text-blue-500 transition-colors duration-200">
+                        Sistema de gestión de convenios empresariales
+                      </p>
+                      <p className="text-xs text-blue-600 mt-1 font-medium">
+                        👆 Toca para ir al dashboard principal
+                      </p>
+                    </Link>
                   </div>
 
                   {/* Botón de Salir */}
