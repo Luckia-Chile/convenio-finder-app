@@ -1,13 +1,31 @@
-/* Arreglos específicos para iOS Safari */
-body {
+/* iOS Safari Fixes */
+html {
+  -webkit-text-size-adjust: 100%;
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
 }
 
-/* Fix para scroll en iOS */
-.ios-scroll-fix {
+body {
+  position: relative;
   -webkit-overflow-scrolling: touch;
-  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+/* Fix específico para iOS */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Prevenir zoom accidental en iOS */
+input, select, textarea {
+  font-size: 16px !important; /* Previene zoom en iOS */
 }
 
 /* Fix para modals en iOS */
@@ -16,17 +34,4 @@ body {
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
   -webkit-overflow-scrolling: touch;
-}
-
-/* Prevenir zoom accidental en iOS */
-input, select, textarea {
-  font-size: 16px; /* Previene zoom en iOS */
-}
-
-/* Fix para viewport en iOS */
-@supports (-webkit-touch-callout: none) {
-  /* Solo en iOS Safari */
-  .min-h-screen {
-    min-height: -webkit-fill-available;
-  }
 }
