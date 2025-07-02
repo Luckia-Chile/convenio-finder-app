@@ -174,7 +174,7 @@
         0 25px 50px -12px rgba(37, 99, 235, 0.25),
         0 0 0 1px rgba(255, 255, 255, 0.1);
       position: relative;
-      overflow: hidden;
+      /*overflow: hidden;*/
     }
     
     .initial-loading .logo::before {
@@ -279,7 +279,7 @@
       height: 1px;
       padding: 0;
       margin: -1px;
-      overflow: hidden;
+      /*overflow: hidden;*/
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
@@ -353,12 +353,13 @@
       }
       
       // Prevenir overscroll
+      /*
       document.addEventListener('touchmove', (e) => {
         if (e.target.closest('.overflow-scroll, .overflow-auto')) return;
         e.preventDefault();
       }, { passive: false });
+      */
     }
-    
     // Performance monitoring
     window.addEventListener('load', () => {
       if ('performance' in window) {

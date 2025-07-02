@@ -97,7 +97,7 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
               zIndex: 999998
             }}
             onMouseDown={(e) => e.preventDefault()}
-            onTouchStart={(e) => e.preventDefault()}
+            /*onTouchStart={(e) => e.preventDefault()}*/
             onClick={(e) => e.preventDefault()}
           />
           
