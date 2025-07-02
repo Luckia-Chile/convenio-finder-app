@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import './styles/ios-fixes.css';
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
