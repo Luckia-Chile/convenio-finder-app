@@ -34,9 +34,9 @@ export const useRole = (): UseRoleReturn => {
         setError(null);
 
         const { data, error: roleError } = await supabase
-          .from('user_roles')
+          .from('profiles')
           .select('role')
-          .eq('user_id', user.id)
+          .eq('id', user.id)
           .single();
 
         if (roleError) {

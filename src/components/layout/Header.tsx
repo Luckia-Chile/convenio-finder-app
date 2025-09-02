@@ -2,15 +2,17 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LogOut, Shield, User, Menu, X } from 'lucide-react';
+import { LogOut, Shield, User, Menu, X, Moon, Sun } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Link } from 'react-router-dom';
 
 export const Header: React.FC = () => {
   const { user, signOut } = useAuth();
   const { role, isAdmin, loading } = useRole();
+  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -65,7 +67,7 @@ export const Header: React.FC = () => {
   if (!user) return null;
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           
@@ -85,11 +87,11 @@ export const Header: React.FC = () => {
             </div>
             
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors duration-200">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                 <span className="hidden sm:inline">Sistema de Convenios</span>
                 <span className="sm:hidden">Convenios</span>
               </h1>
-              <p className="text-xs text-gray-500 hidden lg:block group-hover:text-blue-500 transition-colors duration-200">
+              <p className="text-xs text-gray-500 dark:text-gray-400 hidden lg:block group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200">
                 Powered by Luckia
               </p>
             </div>
@@ -99,18 +101,34 @@ export const Header: React.FC = () => {
           <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-center space-x-3">
               <div className="text-right">
-                <div className="text-sm font-medium text-gray-900" translate="no">
+                <div className="text-sm font-medium text-gray-900 dark:text-white" translate="no">
                   {user.email}
                 </div>
-                <div className="text-xs text-gray-500">Conectado</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">Conectado</div>
               </div>
               {getRoleBadge()}
             </div>
+            
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4 text-yellow-500" />
+              ) : (
+                <Moon className="h-4 w-4 text-gray-700" />
+              )}
+            </Button>
+            
             <Button
               variant="outline"
               size="sm"
               onClick={handleSignOut}
-              className="flex items-center space-x-2 hover:bg-gray-50"
+              className="flex items-center space-x-2 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-600"
             >
               <LogOut className="h-4 w-4" />
               <span>Salir</span>
@@ -162,14 +180,40 @@ export const Header: React.FC = () => {
                 
                 <div className="mt-6 space-y-4">
                   {/* Info del Usuario */}
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <div className="text-sm font-medium text-gray-900 mb-1" translate="no">
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white mb-1" translate="no">
                       {user.email}
                     </div>
-                    <div className="text-xs text-gray-500 mb-3">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                       Usuario conectado
                     </div>
                     {getRoleBadge()}
+                  </div>
+
+                  {/* Theme Toggle Mobile */}
+                  <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      {theme === 'dark' ? (
+                        <Moon className="h-5 w-5 text-blue-500" />
+                      ) : (
+                        <Sun className="h-5 w-5 text-yellow-500" />
+                      )}
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        Modo {theme === 'dark' ? 'oscuro' : 'claro'}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={toggleTheme}
+                      className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="h-4 w-4 text-yellow-500" />
+                      ) : (
+                        <Moon className="h-4 w-4 text-gray-700" />
+                      )}
+                    </Button>
                   </div>
 
                   {/* Información de empresa */}
