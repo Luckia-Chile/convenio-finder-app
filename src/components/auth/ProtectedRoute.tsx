@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/lib/secureLogger';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,8 +12,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    console.log('🛡️ ProtectedRoute - User state changed:', user);
-    console.log('🛡️ ProtectedRoute - Loading state:', loading);
+    logger.route('ProtectedRoute state changed', { hasUser: !!user, loading });
   }, [user, loading]);
 
   if (loading) {
@@ -27,7 +27,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!user) {
-    console.log('🚪 ProtectedRoute - No user found, redirecting to /auth');
+    logger.route('No user found, redirecting to auth');
     return <Navigate to="/auth" replace />;
   }
 

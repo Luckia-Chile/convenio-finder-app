@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/secureLogger';
 
 export type UserRole = 'admin' | 'consultor';
 
@@ -22,14 +23,14 @@ export const useRole = (): UseRoleReturn => {
   useEffect(() => {
     const fetchUserRole = async () => {
       if (!user) {
-        console.log('🔍 useRole: No hay usuario, usando fallback consultor');
+        logger.role('No user found, using fallback consultor role');
         setRole('consultor');
         setLoading(false);
         return;
       }
 
       try {
-        console.log('🔍 useRole: Buscando rol para usuario:', user.email);
+        logger.role('Fetching role for user', { hasUser: true });
         setLoading(true);
         setError(null);
 
@@ -40,15 +41,15 @@ export const useRole = (): UseRoleReturn => {
           .single();
 
         if (roleError) {
-          console.warn('🚨 useRole: Error al obtener rol:', roleError);
+          logger.warn('Error fetching user role', roleError, { context: 'ROLE' });
           setRole('consultor');
         } else {
-          console.log('✅ useRole: Rol obtenido de BD:', data.role, 'para usuario:', user.email);
+          logger.role('Role fetched from database', { role: data.role, hasData: true });
           setRole(data.role as UserRole);
         }
 
       } catch (error) {
-        console.error('🚨 useRole: Error crítico:', error);
+        logger.error('Critical error fetching role', error, { context: 'ROLE' });
         setError('Error al cargar permisos');
         setRole('consultor');
       } finally {
@@ -59,8 +60,8 @@ export const useRole = (): UseRoleReturn => {
     fetchUserRole();
   }, [user]);
 
-  console.log('🔍 useRole: Estado actual ->', {
-    userEmail: user?.email,
+  logger.role('Current role state', {
+    hasUser: !!user,
     role,
     isAdmin: role === 'admin',
     isConsultor: role === 'consultor',

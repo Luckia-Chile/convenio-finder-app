@@ -12,6 +12,47 @@ dist
 dist-ssr
 *.local
 
+# 🔐 SECURITY: Environment and sensitive files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# 🔐 SECURITY: Supabase sensitive files
+.supabase
+supabase/.env
+supabase/.env.*
+
+# 🔐 SECURITY: Database backups and sensitive data
+*.sql.backup
+*.db
+*.sqlite
+*.sqlite3
+database_backup/
+db_exports/
+
+# 🔐 SECURITY: Uploaded files and user data
+uploads/
+user_data/
+excel_files/
+temp_files/
+
+# 🔐 SECURITY: Keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+keys/
+certs/
+
+# 🔐 SECURITY: Debug and audit files
+DEBUG_*.md
+SECURITY_*.md
+audit_*.json
+security_report_*.pdf
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

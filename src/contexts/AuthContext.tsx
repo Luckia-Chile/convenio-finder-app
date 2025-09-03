@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/secureLogger';
 
 interface AuthContextType {
   user: User | null;
@@ -31,18 +32,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('🔔 Auth state changed:', event, session);
-        console.log('🔔 User before:', user);
+        logger.auth('Auth state changed', { event, hasSession: !!session, hasUser: !!session?.user });
         
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
-        console.log('🔔 User after:', session?.user ?? null);
-        
         // If signing out, clear any local storage or cached data
         if (event === 'SIGNED_OUT') {
-          console.log('🚪 User signed out, clearing state');
+          logger.auth('User signed out, clearing state');
           localStorage.removeItem('sb-' + supabase.supabaseUrl.split('//')[1] + '-auth-token');
         }
       }
@@ -50,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('🔍 Initial session check:', session);
+      logger.auth('Initial session check', { hasSession: !!session, hasUser: !!session?.user });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -85,38 +83,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      console.log('🚪 Starting signOut process...');
-      console.log('🚪 Current user:', user);
-      console.log('🚪 Current session:', session);
+      logger.auth('Starting signOut process', { hasUser: !!user, hasSession: !!session });
       
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error('❌ Error during signOut:', error);
+        logger.error('Error during signOut', error, { context: 'AUTH' });
         throw error;
       }
       
-      console.log('✅ SignOut completed successfully');
+      logger.auth('SignOut completed successfully');
       
       // Force immediate state update in case the listener doesn't trigger
-      console.log('🔄 Manually clearing user state...');
+      logger.auth('Manually clearing user state');
       setUser(null);
       setSession(null);
       
       // Clear any local storage tokens manually
       try {
         const keys = Object.keys(localStorage);
+        const clearedKeys: string[] = [];
         keys.forEach(key => {
           if (key.includes('supabase') || key.includes('sb-')) {
             localStorage.removeItem(key);
-            console.log('🗑️ Cleared localStorage key:', key);
+            clearedKeys.push(key);
           }
         });
+        logger.auth('Cleared localStorage keys', { count: clearedKeys.length });
       } catch (storageError) {
-        console.warn('⚠️ Could not clear localStorage:', storageError);
+        logger.warn('Could not clear localStorage', storageError, { context: 'AUTH' });
       }
       
     } catch (error) {
-      console.error('❌ SignOut failed:', error);
+      logger.error('SignOut failed', error, { context: 'AUTH' });
       throw error;
     }
   };

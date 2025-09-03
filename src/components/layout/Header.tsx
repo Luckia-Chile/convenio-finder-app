@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
 import { useTheme } from '@/contexts/ThemeContext';
+import { logger } from '@/lib/secureLogger';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LogOut, Shield, User, Menu, X, Moon, Sun } from 'lucide-react';
@@ -19,31 +20,29 @@ export const Header: React.FC = () => {
   // Reset signing out state when user becomes null (logout successful)
   useEffect(() => {
     if (!user && isSigningOut) {
-      console.log('🔄 User is null, resetting isSigningOut state');
+      logger.auth('User logged out, resetting UI state');
       setIsSigningOut(false);
     }
   }, [user, isSigningOut]);
 
   const handleSignOut = async () => {
     try {
-      console.log('🎯 handleSignOut called');
-      console.log('🎯 signOut function exists:', !!signOut);
-      console.log('🎯 current user:', user);
+      logger.auth('SignOut button clicked', { hasSignOutFunction: !!signOut, hasUser: !!user });
       
       if (!signOut) {
-        console.error('❌ signOut function no está disponible');
+        logger.error('SignOut function not available', undefined, { context: 'HEADER' });
         return;
       }
       
       setIsSigningOut(true);
       setMobileMenuOpen(false);
       
-      console.log('🎯 Calling signOut...');
+      logger.auth('Calling signOut function');
       await signOut();
-      console.log('🎯 signOut call completed');
+      logger.auth('SignOut call completed');
       
     } catch (error) {
-      console.error('❌ Error en handleSignOut:', error);
+      logger.error('Error in handleSignOut', error, { context: 'HEADER' });
       setIsSigningOut(false);
     }
   };
