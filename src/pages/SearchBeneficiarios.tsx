@@ -101,7 +101,7 @@ const SearchBeneficiarios = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-500">
         <Header />
         
         <main className="max-w-7xl mx-auto py-8 px-4">
@@ -109,7 +109,7 @@ const SearchBeneficiarios = () => {
           <div className="mb-8">
             <div className="text-center mb-6">
               <div className="flex justify-center mb-4">
-                <div className="p-4 bg-white rounded-2xl shadow-lg">
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-colors duration-500">
                   <img 
                     src="/Logo_Luckia.svg" 
                     alt="Luckia Logo" 
@@ -125,7 +125,7 @@ const SearchBeneficiarios = () => {
                 {isAdmin ? 'Gestión de Beneficiarios' : 'Búsqueda de Beneficiarios'}
               </h2>
               
-              <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-6 max-w-3xl mx-auto transition-colors duration-500">
                 {isAdmin 
                   ? 'Busca beneficiarios existentes o sube nuevos archivos Excel con información de convenios.'
                   : 'Busca beneficiarios existentes en el sistema de manera rápida y eficiente.'
@@ -133,16 +133,16 @@ const SearchBeneficiarios = () => {
               </p>
 
               <div className="flex flex-wrap gap-3 justify-center">
-                <Badge variant="secondary" className="px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800">
+                <Badge variant="secondary" className="px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 text-blue-800 dark:text-blue-200 transition-colors duration-500">
                   <Users className="h-4 w-4 mr-2" />
                   Sistema Activo
                 </Badge>
-                <Badge variant="secondary" className="px-4 py-2 bg-gradient-to-r from-green-100 to-teal-100 text-green-800">
+                <Badge variant="secondary" className="px-4 py-2 bg-gradient-to-r from-green-100 to-teal-100 dark:from-green-900 dark:to-teal-900 text-green-800 dark:text-green-200 transition-colors duration-500">
                   <Zap className="h-4 w-4 mr-2" />
                   Búsqueda Inteligente
                 </Badge>
                 {isAdmin && (
-                  <Badge variant="secondary" className="px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800">
+                  <Badge variant="secondary" className="px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 text-orange-800 dark:text-orange-200 transition-colors duration-500">
                     <Upload className="h-4 w-4 mr-2" />
                     Carga Masiva
                   </Badge>
@@ -154,7 +154,7 @@ const SearchBeneficiarios = () => {
           {/* Tabs con protección condicional */}
           <Tabs defaultValue="search" className="space-y-6">
             <div className="flex justify-center">
-              <TabsList className={`grid ${isAdmin ? 'grid-cols-2 w-full max-w-md' : 'grid-cols-1 w-full max-w-xs'} h-12 bg-white shadow-lg rounded-xl border`}>
+              <TabsList className={`grid ${isAdmin ? 'grid-cols-2 w-full max-w-md' : 'grid-cols-1 w-full max-w-xs'} h-12 bg-white dark:bg-gray-800 shadow-lg rounded-xl border dark:border-gray-700 transition-colors duration-500`}>
                 <TabsTrigger 
                   value="search" 
                   className="flex items-center space-x-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white rounded-lg transition-all duration-300"
@@ -180,7 +180,7 @@ const SearchBeneficiarios = () => {
 
             {/* Tab Content Búsqueda */}
             <TabsContent value="search" className="space-y-6">
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-xl transition-colors duration-500">
                 <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-t-lg">
                   <CardTitle className="flex items-center space-x-3">
                     <Search className="h-6 w-6" />
@@ -216,7 +216,7 @@ const SearchBeneficiarios = () => {
             {/* Tab Content Upload SOLO para admins */}
             {isAdmin && (
               <TabsContent value="upload" className="space-y-6">
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl border-0 overflow-hidden">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl border-0 overflow-hidden transition-colors duration-500">
                   <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-6 text-white">
                     <div className="flex items-center space-x-3">
                       <div className="p-3 bg-white/20 rounded-xl">

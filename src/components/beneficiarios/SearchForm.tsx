@@ -217,30 +217,30 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         
         {/* Tipo de búsqueda */}
         <div className="lg:col-span-4 space-y-3">
-          <Label htmlFor="searchType" className="text-sm font-semibold flex items-center space-x-2 text-gray-700">
-            <Filter className="h-4 w-4 text-gray-500" />
+          <Label htmlFor="searchType" className="text-sm font-semibold flex items-center space-x-2 text-gray-700 dark:text-gray-300 transition-colors duration-500">
+            <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400 transition-colors duration-500" />
             <span>Tipo de búsqueda</span>
           </Label>
           <Select value={searchType} onValueChange={setSearchType}>
-            <SelectTrigger className="h-12 sm:h-14 text-base border-2 border-gray-200 hover:border-gray-300 focus:border-blue-500 transition-colors bg-white/50 backdrop-blur-sm">
+            <SelectTrigger className="h-12 sm:h-14 text-base border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 focus:border-blue-500 dark:focus:border-blue-400 transition-colors bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
               <SelectValue placeholder="Selecciona el tipo" />
             </SelectTrigger>
-            <SelectContent className="bg-white/95 backdrop-blur-md border-2 border-gray-200">
+            <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-2 border-gray-200 dark:border-gray-600 transition-colors duration-500">
               {searchTypeOptions.map((option) => {
                 const IconComponent = option.icon;
                 return (
                   <SelectItem 
                     key={option.value} 
                     value={option.value} 
-                    className="py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center space-x-4 w-full">
                       <div className={`w-10 h-10 ${option.bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}>
                         <IconComponent className={`h-5 w-5 ${option.textColor}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-gray-900">{option.label}</div>
-                        <div className="text-xs text-gray-500 hidden sm:block">{option.description}</div>
+                        <div className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">{option.label}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block transition-colors duration-500">{option.description}</div>
                       </div>
                     </div>
                   </SelectItem>
@@ -252,7 +252,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
 
         {/* Término de búsqueda */}
         <div className="lg:col-span-5 space-y-3">
-          <Label htmlFor="searchTerm" className="text-sm font-semibold text-gray-700">
+          <Label htmlFor="searchTerm" className="text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">
             Término de búsqueda
           </Label>
           <div className="relative">
@@ -262,7 +262,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Ingresa el término a buscar..."
-              className="h-12 sm:h-14 text-base pl-12 pr-4 border-2 border-gray-200 hover:border-gray-300 focus:border-blue-500 transition-colors bg-white/50 backdrop-blur-sm"
+              className="h-12 sm:h-14 text-base pl-12 pr-4 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 focus:border-blue-500 dark:focus:border-blue-400 transition-colors bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
               disabled={isSearching}
               translate="no"
             />
@@ -274,7 +274,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
 
         {/* Botones de acción */}
         <div className="lg:col-span-3 space-y-3">
-          <Label className="text-sm font-semibold text-gray-700 invisible">Acciones</Label>
+          <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300 invisible transition-colors duration-500">Acciones</Label>
           <div className="flex space-x-3">
             <Button 
               type="submit" 
@@ -299,7 +299,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
               type="button" 
               variant="outline" 
               onClick={handleClear}
-              className="px-4 h-12 sm:h-14 border-2 border-gray-200 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition-colors"
+              className="px-4 h-12 sm:h-14 border-2 border-gray-200 dark:border-gray-600 hover:border-red-300 dark:hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900 hover:text-red-600 dark:hover:text-red-400 transition-colors"
               disabled={isSearching}
               title="Limpiar búsqueda"
             >
@@ -311,20 +311,20 @@ export const SearchForm: React.FC<SearchFormProps> = ({
       </div>
 
       {/* Search Tips Card - Mobile Friendly */}
-      <Card className="border-0 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-md">
+      <Card className="border-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 shadow-md transition-colors duration-500">
         <CardContent className="p-4 sm:p-6">
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="text-sm sm:text-base font-semibold text-blue-900 mb-3 flex items-center space-x-2">
+              <h4 className="text-sm sm:text-base font-semibold text-blue-900 dark:text-blue-100 mb-3 flex items-center space-x-2 transition-colors duration-500">
                 <span>Consejos de búsqueda inteligente</span>
-                <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-200 text-xs">
+                <Badge variant="outline" className="bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-600 text-xs transition-colors duration-500">
                   Pro Tips
                 </Badge>
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-blue-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-blue-800 dark:text-blue-200 transition-colors duration-500">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -347,11 +347,11 @@ export const SearchForm: React.FC<SearchFormProps> = ({
                 </div>
               </div>
               {/* 🆕 NUEVA SECCIÓN: Tips para instituciones */}
-              <div className="mt-4 pt-3 border-t border-blue-200">
+              <div className="mt-4 pt-3 border-t border-blue-200 dark:border-blue-700 transition-colors duration-500">
                 <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-sm font-semibold text-blue-900">🏛️ Instituciones con credencial:</span>
+                  <span className="text-sm font-semibold text-blue-900 dark:text-blue-100 transition-colors duration-500">🏛️ Instituciones con credencial:</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-blue-700">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-blue-700 dark:text-blue-300 transition-colors duration-500">
                   <span>👮‍♂️ Carabineros</span>
                   <span>🕵️‍♂️ PDI</span>
                   <span>⚕️ Colegio Médico</span>
@@ -363,7 +363,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
       </Card>
 
       {/* Quick Stats - Solo en desktop */}
-      <div className="hidden lg:flex items-center justify-between pt-2 text-sm text-gray-600">
+      <div className="hidden lg:flex items-center justify-between pt-2 text-sm text-gray-600 dark:text-gray-400 transition-colors duration-500">
         <div className="flex items-center space-x-2">
           <span>Búsquedas recientes:</span>
           <Badge variant="outline" className="cursor-not-allowed opacity-50">
@@ -372,7 +372,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         </div>
         <div className="flex items-center space-x-2">
           <span>Resultados por página:</span>
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">200</Badge>
+          <Badge variant="outline" className="bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-200 dark:border-green-600 transition-colors duration-500">200</Badge>
         </div>
       </div>
     </form>

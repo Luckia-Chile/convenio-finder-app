@@ -326,10 +326,10 @@ export const UploadSection: React.FC = () => {
             </div>
 
             {uploadState.selectedFile && (
-              <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
-                <FileSpreadsheet className="h-5 w-5 text-green-600" />
-                <span className="text-sm font-medium">{uploadState.selectedFile.name}</span>
-                <span className="text-xs text-gray-500">
+              <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors duration-500">
+                <FileSpreadsheet className="h-5 w-5 text-green-600 dark:text-green-400 transition-colors duration-500" />
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">{uploadState.selectedFile.name}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-500">
                   ({(uploadState.selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                 </span>
               </div>
@@ -382,21 +382,21 @@ export const UploadSection: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400 transition-colors duration-500">
               El archivo Excel debe contener las siguientes columnas en este orden exacto:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div className="p-2 bg-gray-50 rounded text-center">
-                <span className="text-sm font-medium">1. APELLIDO</span>
+              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-center transition-colors duration-500">
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">1. APELLIDO</span>
               </div>
-              <div className="p-2 bg-gray-50 rounded text-center">
-                <span className="text-sm font-medium">2. NOMBRE</span>
+              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-center transition-colors duration-500">
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">2. NOMBRE</span>
               </div>
-              <div className="p-2 bg-green-50 rounded text-center">
-                <span className="text-sm font-medium">3. RUT (Opcional)</span>
+              <div className="p-2 bg-green-50 dark:bg-green-800 rounded text-center transition-colors duration-500">
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">3. RUT (Opcional)</span>
               </div>
-              <div className="p-2 bg-gray-50 rounded text-center">
-                <span className="text-sm font-medium">4. EMPRESA</span>
+              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-center transition-colors duration-500">
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">4. EMPRESA</span>
               </div>
             </div>
             <Alert>

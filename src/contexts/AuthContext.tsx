@@ -30,16 +30,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('Auth state changed:', event, session);
+      async (event, session) => {
+        console.log('🔔 Auth state changed:', event, session);
+        console.log('🔔 User before:', user);
+        
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        console.log('🔔 User after:', session?.user ?? null);
+        
+        // If signing out, clear any local storage or cached data
+        if (event === 'SIGNED_OUT') {
+          console.log('🚪 User signed out, clearing state');
+          localStorage.removeItem('sb-' + supabase.supabaseUrl.split('//')[1] + '-auth-token');
+        }
       }
     );
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔍 Initial session check:', session);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -73,7 +84,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      console.log('🚪 Starting signOut process...');
+      console.log('🚪 Current user:', user);
+      console.log('🚪 Current session:', session);
+      
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('❌ Error during signOut:', error);
+        throw error;
+      }
+      
+      console.log('✅ SignOut completed successfully');
+      
+      // Force immediate state update in case the listener doesn't trigger
+      console.log('🔄 Manually clearing user state...');
+      setUser(null);
+      setSession(null);
+      
+      // Clear any local storage tokens manually
+      try {
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+          if (key.includes('supabase') || key.includes('sb-')) {
+            localStorage.removeItem(key);
+            console.log('🗑️ Cleared localStorage key:', key);
+          }
+        });
+      } catch (storageError) {
+        console.warn('⚠️ Could not clear localStorage:', storageError);
+      }
+      
+    } catch (error) {
+      console.error('❌ SignOut failed:', error);
+      throw error;
+    }
   };
 
   const value = {

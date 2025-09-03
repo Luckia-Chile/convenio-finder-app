@@ -1,5 +1,5 @@
 // src/components/layout/Header.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -14,24 +14,37 @@ export const Header: React.FC = () => {
   const { role, isAdmin, loading } = useRole();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  // Reset signing out state when user becomes null (logout successful)
+  useEffect(() => {
+    if (!user && isSigningOut) {
+      console.log('🔄 User is null, resetting isSigningOut state');
+      setIsSigningOut(false);
+    }
+  }, [user, isSigningOut]);
 
   const handleSignOut = async () => {
     try {
-      // 🧪 DEBUG TEMPORAL - Borrar después
-      console.log('🔍 handleSignOut ejecutado');
-      console.log('🔍 signOut function:', signOut);
-      console.log('🔍 user:', user);
+      console.log('🎯 handleSignOut called');
+      console.log('🎯 signOut function exists:', !!signOut);
+      console.log('🎯 current user:', user);
       
       if (!signOut) {
         console.error('❌ signOut function no está disponible');
         return;
       }
       
-      await signOut();
+      setIsSigningOut(true);
       setMobileMenuOpen(false);
-      console.log('✅ signOut completado');
+      
+      console.log('🎯 Calling signOut...');
+      await signOut();
+      console.log('🎯 signOut call completed');
+      
     } catch (error) {
-      console.error('❌ Error al cerrar sesión:', error);
+      console.error('❌ Error en handleSignOut:', error);
+      setIsSigningOut(false);
     }
   };
 
@@ -128,10 +141,20 @@ export const Header: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={handleSignOut}
+              disabled={isSigningOut}
               className="flex items-center space-x-2 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-600"
             >
-              <LogOut className="h-4 w-4" />
-              <span>Salir</span>
+              {isSigningOut ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                  <span>Saliendo...</span>
+                </>
+              ) : (
+                <>
+                  <LogOut className="h-4 w-4" />
+                  <span>Salir</span>
+                </>
+              )}
             </Button>
           </div>
 
@@ -246,10 +269,20 @@ export const Header: React.FC = () => {
                   <Button
                     variant="outline"
                     onClick={handleSignOut}
+                    disabled={isSigningOut}
                     className="w-full flex items-center justify-center space-x-2 h-11"
                   >
-                    <LogOut className="h-4 w-4" />
-                    <span>Cerrar Sesión</span>
+                    {isSigningOut ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                        <span>Cerrando Sesión...</span>
+                      </>
+                    ) : (
+                      <>
+                        <LogOut className="h-4 w-4" />
+                        <span>Cerrar Sesión</span>
+                      </>
+                    )}
                   </Button>
                 </div>
               </SheetContent>

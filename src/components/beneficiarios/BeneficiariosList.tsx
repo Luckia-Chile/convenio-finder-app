@@ -73,7 +73,7 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
         <CardContent className="flex items-center justify-center py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-gray-600">Buscando beneficiarios...</p>
+            <p className="mt-2 text-gray-600 dark:text-gray-400 transition-colors duration-500">Buscando beneficiarios...</p>
           </div>
         </CardContent>
       </Card>
@@ -235,16 +235,16 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
                       <p className={`text-xl font-semibold ${detectedInstitution.color.text} mb-2`}>
                         {detectedInstitution.displayName}
                       </p>
-                      <p className="text-gray-600 max-w-md mx-auto leading-relaxed">
+                      <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed transition-colors duration-500">
                         Esta institución utiliza credenciales institucionales. Revisa el aviso para más información.
                       </p>
                     </div>
                   </div>
                 ) : (
                   <div>
-                    <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg mb-2">No se encontraron beneficiarios</p>
-                    <p className="text-gray-400">
+                    <Users className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4 transition-colors duration-500" />
+                    <p className="text-gray-500 dark:text-gray-400 text-lg mb-2 transition-colors duration-500">No se encontraron beneficiarios</p>
+                    <p className="text-gray-400 dark:text-gray-500 transition-colors duration-500">
                       Intenta con diferentes términos de búsqueda o sube un archivo Excel con nuevos datos.
                     </p>
                   </div>
@@ -254,18 +254,18 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
               <div className="space-y-4">
                 {/* Indicador de progreso de carga */}
                 {totalResults > 0 && (
-                  <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 transition-colors duration-500">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">
+                      <span className="text-gray-600 dark:text-gray-400 transition-colors duration-500">
                         📊 Mostrando {currentCount.toLocaleString()} de {totalResults.toLocaleString()} beneficiarios
                       </span>
                       {hasMore && (
-                        <span className="text-blue-600 font-medium">
+                        <span className="text-blue-600 dark:text-blue-400 font-medium transition-colors duration-500">
                           {remainingCount.toLocaleString()} más por cargar
                         </span>
                       )}
                       {!hasMore && currentCount > 0 && (
-                        <span className="text-green-600 font-medium flex items-center space-x-1">
+                        <span className="text-green-600 dark:text-green-400 font-medium flex items-center space-x-1 transition-colors duration-500">
                           <CheckCircle className="h-4 w-4" />
                           <span>Completado</span>
                         </span>
@@ -289,8 +289,8 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
                       </TableHeader>
                       <TableBody>
                         {beneficiarios.map((beneficiario, index) => (
-                          <TableRow key={beneficiario.id} className="hover:bg-gray-50">
-                            <TableCell className="font-medium text-gray-500">
+                          <TableRow key={beneficiario.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <TableCell className="font-medium text-gray-500 dark:text-gray-400 transition-colors duration-500">
                               {index + 1}
                             </TableCell>
                             <TableCell 
@@ -329,12 +329,12 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
                   {beneficiarios.map((beneficiario, index) => (
                     <div 
                       key={beneficiario.id} 
-                      className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
+                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3 transition-colors duration-500"
                     >
                       {/* Header simple */}
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-500">#{index + 1}</span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors duration-500">#{index + 1}</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 transition-colors duration-500">
                           {formatDate(beneficiario.created_at)}
                         </span>
                       </div>
@@ -342,22 +342,22 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
                       {/* Información básica */}
                       <div className="space-y-2">
                         <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">Nombre</span>
-                          <p className="font-medium text-gray-900" translate="no">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide transition-colors duration-500">Nombre</span>
+                          <p className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500" translate="no">
                             {beneficiario.apellido}, {beneficiario.nombre}
                           </p>
                         </div>
                         
                         <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">RUT</span>
-                          <p className="font-medium text-gray-900" translate="no">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide transition-colors duration-500">RUT</span>
+                          <p className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500" translate="no">
                             {formatRut(beneficiario.rut)}
                           </p>
                         </div>
                         
                         <div>
-                          <span className="text-xs text-gray-500 uppercase tracking-wide">Empresa</span>
-                          <p className="font-medium text-gray-900" translate="no">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide transition-colors duration-500">Empresa</span>
+                          <p className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500" translate="no">
                             {beneficiario.empresa}
                           </p>
                         </div>
@@ -387,7 +387,7 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
                         </div>
                       )}
                     </Button>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-500">
                       {remainingCount.toLocaleString()} beneficiarios restantes
                     </p>
                   </div>
@@ -397,7 +397,7 @@ export const BeneficiariosList: React.FC<BeneficiariosListProps> = ({
                 {!hasMore && currentCount > 0 && totalResults > 200 && (
                   <div className="flex items-center justify-center space-x-2 pt-4 border-t">
                     <CheckCircle className="h-5 w-5 text-green-600" />
-                    <span className="text-green-600 font-medium">
+                    <span className="text-green-600 dark:text-green-400 font-medium transition-colors duration-500">
                       ✅ Se han cargado todos los {totalResults.toLocaleString()} beneficiarios
                     </span>
                   </div>
