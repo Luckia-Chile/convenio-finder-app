@@ -79,6 +79,27 @@ const INSTITUTIONS: InstitutionInfo[] = [
       border: 'border-red-200'
     },
     icon: '⚕️'
+  },
+  {
+    id: 'caja_araucana',
+    name: 'CAJA LA ARAUCANA',
+    displayName: 'Caja de Compensación La Araucana',
+    credentialMessage: 'Los funcionarios de Caja de Compensación La Araucana deben presentar su carnet y un documento que acredite que son afiliados.',
+    keywords: ['caja araucana', 'caja la araucana', 'caja compensacion', 'compensacion araucana'],
+    variants: [
+      'caja araucana', 'caja la araucana', 'caja de compensacion la araucana',
+      'caja de compensación la araucana', 'compensacion la araucana', 'compensación la araucana',
+      'caja compensacion araucana', 'caja compensación araucana',
+      'la araucana', 'araucana', 'caja de compensacion', 'caja de compensación',
+      'caja comp araucana', 'caja comp la araucana', 'ccaf araucana',
+      'ccaf la araucana', 'c.c.a.f araucana', 'c.c.a.f la araucana'
+    ],
+    color: {
+      bg: 'bg-purple-50',
+      text: 'text-purple-800',
+      border: 'border-purple-200'
+    },
+    icon: '🏛️'
   }
 ];
 
@@ -209,6 +230,7 @@ export const testDetection = (): void => {
     'carabineros', 'caravineros', 'policia uniformada',
     'pdi', 'policia investigaciones', 'investigaciones',
     'colegio medico', 'colegiomedico', 'medicos',
+    'caja araucana', 'caja la araucana', 'compensacion araucana',
     'usuario normal', 'juan perez', '12345678-9'
   ];
   

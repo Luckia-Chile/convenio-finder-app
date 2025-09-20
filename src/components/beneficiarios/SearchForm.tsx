@@ -351,10 +351,11 @@ export const SearchForm: React.FC<SearchFormProps> = ({
                 <div className="flex items-center space-x-2 mb-2">
                   <span className="text-sm font-semibold text-blue-900 dark:text-blue-100 transition-colors duration-500">🏛️ Instituciones con credencial:</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-blue-700 dark:text-blue-300 transition-colors duration-500">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-blue-700 dark:text-blue-300 transition-colors duration-500">
                   <span>👮‍♂️ Carabineros</span>
                   <span>🕵️‍♂️ PDI</span>
                   <span>⚕️ Colegio Médico</span>
+                  <span>🏛️ Caja La Araucana</span>
                 </div>
               </div>
             </div>

@@ -72,7 +72,7 @@ const normalizeData = (row: RawExcelRow): ProcessedRow => ({
 // Handle special institution names
 const normalizeEmpresa = (empresa: string): string => {
   const upperEmpresa = empresa.toUpperCase();
-  
+
   // Keep special institutions as-is
   if (upperEmpresa.includes('COLEGIO MÉDICO') || upperEmpresa.includes('COLEGIO MEDICO')) {
     return 'COLEGIO MÉDICO';
@@ -83,7 +83,13 @@ const normalizeEmpresa = (empresa: string): string => {
   if (upperEmpresa === 'PDI') {
     return 'PDI';
   }
-  
+  if (upperEmpresa.includes('CAJA') && upperEmpresa.includes('ARAUCANA')) {
+    return 'CAJA LA ARAUCANA';
+  }
+  if (upperEmpresa.includes('COMPENSACION') && upperEmpresa.includes('ARAUCANA')) {
+    return 'CAJA LA ARAUCANA';
+  }
+
   return empresa;
 };
 
