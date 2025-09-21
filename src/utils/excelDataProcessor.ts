@@ -27,10 +27,17 @@ const cleanRut = (rut: string): string => {
 
 // Validate if a row should be processed - simplified to only skip truly empty or header rows
 const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reason?: string } => {
-  const apellido = row.APELLIDO?.toString().trim() || '';
-  const nombre = row.NOMBRE?.toString().trim() || '';
-  const rut = row.RUT?.toString().trim() || '';
-  const empresa = row.EMPRESA?.toString().trim() || '';
+  const apellido = getColumnValue(row, ['APELLIDO', 'apellido', 'Apellido', 'APELLIDOS', 'apellidos']);
+  const nombre = getColumnValue(row, ['NOMBRE', 'nombre', 'Nombre', 'NOMBRES', 'nombres']);
+  const rut = getColumnValue(row, ['RUT', 'rut', 'Rut', 'RUN', 'run']);
+  const empresa = getColumnValue(row, [
+    'EMPRESA', 'empresa', 'Empresa',
+    'INSTITUCION', 'institucion', 'Institución',
+    'ORGANIZACION', 'organizacion', 'Organización',
+    'ENTIDAD', 'entidad', 'Entidad',
+    'EMPLEADOR', 'empleador', 'Empleador',
+    'SERVICIO', 'servicio', 'Servicio'
+  ]);
 
   // Skip header rows (mantener como antes)
   if (apellido.toUpperCase() === 'APELLIDO' || 
@@ -61,12 +68,29 @@ const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reaso
   return { isValid: true };
 };
 
-// Normalize row data
+// Helper function to find column value with flexible naming
+const getColumnValue = (row: RawExcelRow, possibleNames: string[]): string => {
+  for (const name of possibleNames) {
+    if (row[name] !== undefined && row[name] !== null) {
+      return row[name]?.toString().trim() || '';
+    }
+  }
+  return '';
+};
+
+// Normalize row data with flexible column mapping
 const normalizeData = (row: RawExcelRow): ProcessedRow => ({
-  apellido: row.APELLIDO?.toString().trim() || '',
-  nombre: row.NOMBRE?.toString().trim() || '',
-  rut: cleanRut(row.RUT?.toString() || ''),
-  empresa: normalizeEmpresa(row.EMPRESA?.toString().trim() || '')
+  apellido: getColumnValue(row, ['APELLIDO', 'apellido', 'Apellido', 'APELLIDOS', 'apellidos']),
+  nombre: getColumnValue(row, ['NOMBRE', 'nombre', 'Nombre', 'NOMBRES', 'nombres']),
+  rut: cleanRut(getColumnValue(row, ['RUT', 'rut', 'Rut', 'RUN', 'run'])),
+  empresa: normalizeEmpresa(getColumnValue(row, [
+    'EMPRESA', 'empresa', 'Empresa',
+    'INSTITUCION', 'institucion', 'Institución',
+    'ORGANIZACION', 'organizacion', 'Organización',
+    'ENTIDAD', 'entidad', 'Entidad',
+    'EMPLEADOR', 'empleador', 'Empleador',
+    'SERVICIO', 'servicio', 'Servicio'
+  ]))
 });
 
 // Handle special institution names
@@ -93,8 +117,10 @@ const normalizeEmpresa = (empresa: string): string => {
   return empresa;
 };
 
+
 // Process Excel data with validation and normalization - NO DUPLICATE DETECTION
 export const processExcelData = (rawData: RawExcelRow[]): ProcessingResult => {
+
   const validRows: ProcessedRow[] = [];
   const skippedReasons: string[] = [];
   const reasonCounts: { [key: string]: number } = {};

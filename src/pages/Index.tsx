@@ -51,7 +51,7 @@ const Index = () => {
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 mb-4 transition-all duration-300">
             Sistema de Convenios
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed transition-colors duration-300">
+          <p className="text-xl text-gray-800 dark:text-gray-100 mb-8 leading-relaxed transition-colors duration-300">
             Plataforma de gestión para acuerdos de consultoría
           </p>
           
@@ -88,13 +88,13 @@ const Index = () => {
               <Shield className="h-8 w-8" />
             </div>
             <h2 className="text-3xl font-bold mb-2">Panel de Administración</h2>
-            <p className="text-blue-100 dark:text-gray-300 text-lg transition-colors duration-300">
+            <p className="text-blue-100 dark:text-gray-100 text-lg transition-colors duration-300">
               Gestiona acuerdos de consultoría, sube archivos Excel y controla el sistema completo
             </p>
           </div>
           <div className="text-center md:text-right bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/20 dark:border-gray-500 transition-all duration-300">
             <div className="text-3xl font-bold text-white">{beneficiariosCount.toLocaleString()}</div>
-            <div className="text-blue-100 dark:text-gray-300">Beneficiarios Registrados</div>
+            <div className="text-blue-100 dark:text-gray-100">Beneficiarios Registrados</div>
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@ const Index = () => {
               </div>
               <CardTitle className="text-green-800 dark:text-green-300 text-lg">Buscar Beneficiarios</CardTitle>
             </div>
-            <CardDescription className="text-green-700 dark:text-gray-300 text-sm leading-relaxed min-h-[3rem] flex items-center">
+            <CardDescription className="text-green-700 dark:text-gray-100 text-sm leading-relaxed min-h-[3rem] flex items-center">
               Encuentra información de beneficiarios de forma rápida y eficiente con nuestro sistema de búsqueda inteligente.
             </CardDescription>
           </CardHeader>
@@ -133,7 +133,7 @@ const Index = () => {
               </div>
               <CardTitle className="text-blue-800 dark:text-blue-300 text-lg">Subir Archivos</CardTitle>
             </div>
-            <CardDescription className="text-blue-700 dark:text-gray-300 text-sm leading-relaxed min-h-[3rem] flex items-center">
+            <CardDescription className="text-blue-700 dark:text-gray-100 text-sm leading-relaxed min-h-[3rem] flex items-center">
               Procesa archivos Excel masivamente con validación automática y reportes detallados de carga.
             </CardDescription>
           </CardHeader>
@@ -148,23 +148,25 @@ const Index = () => {
         </Card>
 
         {/* Card 3: Gestionar Convenios - ALTURA FIJA */}
-        <Card className="hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-pink-100 dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-700 border-0 dark:border dark:border-gray-600 hover:scale-105 h-full flex flex-col opacity-75">
+        <Card className="hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-pink-100 dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-700 border-0 dark:border dark:border-gray-600 hover:scale-105 h-full flex flex-col">
           <CardHeader className="flex-shrink-0">
             <div className="flex items-center space-x-3 mb-3">
-              <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-600 dark:to-pink-600 opacity-50 rounded-xl">
+              <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-600 dark:to-pink-600 rounded-xl">
                 <FileText className="h-6 w-6 text-white" />
               </div>
               <CardTitle className="text-purple-800 dark:text-purple-300 text-lg">Gestionar Convenios</CardTitle>
             </div>
-            <CardDescription className="text-purple-700 dark:text-gray-300 text-sm leading-relaxed min-h-[3rem] flex items-center">
+            <CardDescription className="text-purple-700 dark:text-gray-100 text-sm leading-relaxed min-h-[3rem] flex items-center">
               Administra y revisa todos los convenios de consultoría con herramientas avanzadas de gestión.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow flex flex-col justify-end pt-2">
-            <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-600 dark:to-pink-600 opacity-50 cursor-not-allowed h-12" disabled>
-              <FileText className="h-4 w-4 mr-2" />
-              Próximamente
-            </Button>
+            <Link to="/instituciones" className="w-full">
+              <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-600 dark:to-pink-600 hover:from-purple-600 hover:to-pink-600 dark:hover:from-purple-700 dark:hover:to-pink-700 text-white h-12 shadow-lg hover:shadow-xl transition-all duration-300">
+                <FileText className="h-4 w-4 mr-2" />
+                Gestionar Ahora
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -183,15 +185,15 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-white dark:bg-black/20 rounded-xl shadow-sm dark:shadow-gray-900/50 hover:scale-105 transition-transform duration-200">
               <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-2">-</div>
-              <div className="text-gray-600 dark:text-gray-300 font-medium">Archivos Subidos</div>
+              <div className="text-gray-800 dark:text-gray-100 font-medium">Archivos Subidos</div>
             </div>
             <div className="text-center p-6 bg-white dark:bg-black/20 rounded-xl shadow-sm dark:shadow-gray-900/50 hover:scale-105 transition-transform duration-200">
               <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">{beneficiariosCount.toLocaleString()}</div>
-              <div className="text-gray-600 dark:text-gray-300 font-medium">Beneficiarios Registrados</div>
+              <div className="text-gray-800 dark:text-gray-100 font-medium">Beneficiarios Registrados</div>
             </div>
             <div className="text-center p-6 bg-white dark:bg-black/20 rounded-xl shadow-sm dark:shadow-gray-900/50 hover:scale-105 transition-transform duration-200">
               <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">-</div>
-              <div className="text-gray-600 dark:text-gray-300 font-medium">Convenios Activos</div>
+              <div className="text-gray-800 dark:text-gray-100 font-medium">Convenios Activos</div>
             </div>
           </div>
         </CardContent>
@@ -218,13 +220,13 @@ const Index = () => {
               <User className="h-8 w-8" />
             </div>
             <h2 className="text-3xl font-bold mb-2">Panel de Consultor</h2>
-            <p className="text-green-100 dark:text-gray-300 text-lg transition-colors duration-300">
+            <p className="text-green-100 dark:text-gray-100 text-lg transition-colors duration-300">
               Utiliza el buscador para encontrar información de beneficiarios de manera eficiente
             </p>
           </div>
           <div className="text-center md:text-right bg-white/10 dark:bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/20 dark:border-gray-500 transition-all duration-300">
             <div className="text-3xl font-bold text-white">{beneficiariosCount.toLocaleString()}</div>
-            <div className="text-green-100 dark:text-gray-300">Beneficiarios Disponibles</div>
+            <div className="text-green-100 dark:text-gray-100">Beneficiarios Disponibles</div>
           </div>
         </div>
       </div>
@@ -237,7 +239,7 @@ const Index = () => {
               <Search className="h-12 w-12 text-white" />
             </div>
             <CardTitle className="text-2xl text-teal-800 dark:text-teal-300">Buscar Beneficiarios</CardTitle>
-            <CardDescription className="text-teal-700 dark:text-gray-300 text-lg">
+            <CardDescription className="text-teal-700 dark:text-gray-100 text-lg">
               Encuentra información de beneficiarios de forma rápida y eficiente
             </CardDescription>
           </CardHeader>
@@ -254,9 +256,9 @@ const Index = () => {
 
         {/* Información Adicional */}
         <div className="text-center mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-700 rounded-xl border-0 dark:border dark:border-gray-600 transition-all duration-300">
-          <Users className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+          <Users className="h-16 w-16 text-gray-700 dark:text-gray-200 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Acceso Completo</h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-gray-800 dark:text-gray-100">
             Consulta información completa de beneficiarios registrados en el sistema de manera segura y eficiente.
           </p>
         </div>

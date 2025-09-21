@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, FileSpreadsheet, AlertCircle, X } from 'lucide-react';
+import { Upload, FileSpreadsheet, AlertCircle, X, CloudUpload, CheckCircle, FileText, Clock } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -68,7 +68,6 @@ export const UploadSection: React.FC = () => {
     try {
       await analyzeFile(file);
     } catch (error) {
-      console.error('File analysis error:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -238,7 +237,6 @@ export const UploadSection: React.FC = () => {
       });
 
     } catch (error) {
-      console.error('Upload error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido al procesar el archivo';
       
       const summaryData = {
@@ -295,56 +293,129 @@ export const UploadSection: React.FC = () => {
   return (
     <div className="space-y-6">
       {uploadState.stage === 'select' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Upload className="h-5 w-5" />
-              <span>Subir Archivo Excel Optimizado</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="excel-file">Seleccionar archivo Excel</Label>
-              <div className="flex space-x-2">
-                <Input
-                  id="excel-file"
-                  type="file"
-                  accept=".xlsx,.xls"
-                  onChange={handleFileSelect}
-                  className="flex-1"
-                />
-                {uploadState.selectedFile && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={clearFile}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+        <div className="space-y-6">
+          {/* Header con gradiente atractivo */}
+          <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-8 text-white">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold flex items-center gap-3">
+                    <CloudUpload className="h-8 w-8" />
+                    Cargar Beneficiarios
+                  </h2>
+                  <p className="text-blue-100 text-lg">
+                    Sube archivos Excel para agregar beneficiarios al sistema
+                  </p>
+                </div>
+                <div className="hidden md:block">
+                  <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center">
+                    <FileSpreadsheet className="h-12 w-12 text-white" />
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
 
-            {uploadState.selectedFile && (
-              <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg transition-colors duration-500">
-                <FileSpreadsheet className="h-5 w-5 text-green-600 dark:text-green-400 transition-colors duration-500" />
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">{uploadState.selectedFile.name}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-500">
-                  ({(uploadState.selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                </span>
+          {/* Zona de carga con diseño mejorado */}
+          <Card className="border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300">
+            <CardContent className="p-8">
+              <div className="text-center space-y-6">
+                <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                  <Upload className="h-10 w-10 text-white" />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Selecciona tu archivo Excel
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Arrastra y suelta o haz clic para seleccionar
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <Label htmlFor="excel-file" className="sr-only">Seleccionar archivo Excel</Label>
+                  <div className="relative">
+                    <Input
+                      id="excel-file"
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={handleFileSelect}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                      <Button
+                        size="lg"
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        type="button"
+                      >
+                        <Upload className="h-5 w-5 mr-2" />
+                        Seleccionar Archivo
+                      </Button>
+                      {uploadState.selectedFile && (
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={clearFile}
+                          className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Limpiar
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {uploadState.selectedFile && (
+                    <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center">
+                            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-green-900 dark:text-green-100">
+                              {uploadState.selectedFile.name}
+                            </p>
+                            <p className="text-sm text-green-700 dark:text-green-300">
+                              {(uploadState.selectedFile.size / 1024 / 1024).toFixed(2)} MB • Archivo Excel
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Formatos soportados */}
+                <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span>Soporta .xlsx y .xls • Máximo 50MB</span>
+                </div>
               </div>
-            )}
+            </CardContent>
+          </Card>
 
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Sin detección de duplicados:</strong> Esta versión insertará TODAS las filas válidas sin 
-                filtrar duplicados. Solo se omitirán filas completamente vacías o de encabezado. 
-                <strong>Nota:</strong> El RUT es opcional para beneficiarios que usan solo credenciales.
+          {/* Información importante con mejor diseño */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/20">
+              <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <AlertDescription className="text-amber-800 dark:text-amber-200">
+                <span className="font-semibold">Sin detección de duplicados:</span> Esta versión insertará TODAS las filas válidas sin
+                filtrar duplicados. Solo se omitirán filas completamente vacías o de encabezado.
               </AlertDescription>
             </Alert>
-          </CardContent>
-        </Card>
+
+            <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+              <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <AlertDescription className="text-blue-800 dark:text-blue-200">
+                <span className="font-semibold">Procesamiento optimizado:</span> Los archivos grandes se procesan por lotes para mejor rendimiento.
+                El RUT es opcional para beneficiarios que usan solo credenciales.
+              </AlertDescription>
+            </Alert>
+          </div>
+        </div>
       )}
 
       {uploadState.stage === 'analysis' && uploadState.analysisData && (
@@ -376,35 +447,90 @@ export const UploadSection: React.FC = () => {
         />
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Formato de Archivo Esperado</CardTitle>
+      {/* Formato de archivo con diseño mejorado */}
+      <Card className="border-t-4 border-t-indigo-500">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20">
+          <CardTitle className="flex items-center gap-2 text-indigo-900 dark:text-indigo-100">
+            <FileText className="h-5 w-5" />
+            Formato de Archivo Esperado
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <p className="text-gray-600 dark:text-gray-400 transition-colors duration-500">
-              El archivo Excel debe contener las siguientes columnas en este orden exacto:
+        <CardContent className="space-y-6 pt-6">
+          <div className="space-y-4">
+            <p className="text-gray-700 dark:text-gray-100 text-base leading-relaxed">
+              El archivo Excel debe contener las siguientes columnas. El orden puede variar,
+              el sistema detectará automáticamente las columnas:
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-center transition-colors duration-500">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">1. APELLIDO</span>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="relative group">
+                <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border border-blue-200 dark:border-blue-700 transition-all duration-300 group-hover:shadow-md">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Columna 1</span>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  </div>
+                  <span className="text-sm font-bold text-blue-900 dark:text-blue-100">APELLIDO</span>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">Requerido</p>
+                </div>
               </div>
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-center transition-colors duration-500">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">2. NOMBRE</span>
+
+              <div className="relative group">
+                <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-200 dark:border-green-700 transition-all duration-300 group-hover:shadow-md">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider">Columna 2</span>
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  </div>
+                  <span className="text-sm font-bold text-green-900 dark:text-green-100">NOMBRE</span>
+                  <p className="text-xs text-green-700 dark:text-green-300 mt-1">Requerido</p>
+                </div>
               </div>
-              <div className="p-2 bg-green-50 dark:bg-green-800 rounded text-center transition-colors duration-500">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">3. RUT (Opcional)</span>
+
+              <div className="relative group">
+                <div className="p-4 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-lg border border-amber-200 dark:border-amber-700 transition-all duration-300 group-hover:shadow-md">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Columna 3</span>
+                    <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                  </div>
+                  <span className="text-sm font-bold text-amber-900 dark:text-amber-100">RUT</span>
+                  <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">Opcional</p>
+                </div>
               </div>
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-center transition-colors duration-500">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">4. EMPRESA</span>
+
+              <div className="relative group">
+                <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg border border-purple-200 dark:border-purple-700 transition-all duration-300 group-hover:shadow-md">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Columna 4</span>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  </div>
+                  <span className="text-sm font-bold text-purple-900 dark:text-purple-100">EMPRESA</span>
+                  <p className="text-xs text-purple-700 dark:text-purple-300 mt-1">Requerido</p>
+                </div>
               </div>
             </div>
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Sin filtrado de duplicados:</strong> Todas las filas válidas se insertarán sin verificar duplicados. 
-                Validación automática de datos, manejo de instituciones especiales (COLEGIO MÉDICO, CARABINEROS, PDI), 
-                y omisión automática solo de filas vacías o de encabezado.
+
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-lg p-4 border">
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                Columnas Detectadas Automáticamente
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div>
+                  <span className="font-medium text-gray-700 dark:text-gray-100">Empresa/Institución:</span>
+                  <p className="text-gray-600 dark:text-gray-400">EMPRESA, INSTITUCIÓN, ORGANIZACIÓN, ENTIDAD, EMPLEADOR, SERVICIO</p>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700 dark:text-gray-100">Identificación:</span>
+                  <p className="text-gray-600 dark:text-gray-400">RUT, RUN (formato flexible)</p>
+                </div>
+              </div>
+            </div>
+
+            <Alert className="border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20">
+              <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              <AlertDescription className="text-emerald-800 dark:text-emerald-200">
+                <span className="font-semibold">Procesamiento inteligente:</span> El sistema maneja automáticamente
+                instituciones especiales (COLEGIO MÉDICO, CARABINEROS, PDI, CAJA LA ARAUCANA),
+                validación de datos y normalización de formatos.
               </AlertDescription>
             </Alert>
           </div>

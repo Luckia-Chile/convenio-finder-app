@@ -65,21 +65,21 @@ export const UploadSummary: React.FC<UploadSummaryProps> = ({
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center p-3 bg-blue-50 rounded-lg">
                 <div className="text-lg font-bold text-blue-600">{totalRows.toLocaleString()}</div>
-                <div className="text-xs text-gray-600">Total de filas</div>
+                <div className="text-xs text-gray-800 dark:text-gray-200">Total de filas</div>
               </div>
               <div className="text-center p-3 bg-green-50 rounded-lg">
                 <div className="text-lg font-bold text-green-600">{processedRows.toLocaleString()}</div>
-                <div className="text-xs text-gray-600">Registros cargados</div>
+                <div className="text-xs text-gray-800 dark:text-gray-200">Registros cargados</div>
               </div>
               <div className="text-center p-3 bg-yellow-50 rounded-lg">
                 <div className="text-lg font-bold text-yellow-600">{skippedRows.toLocaleString()}</div>
-                <div className="text-xs text-gray-600">Filas omitidas</div>
+                <div className="text-xs text-gray-800 dark:text-gray-200">Filas omitidas</div>
               </div>
             </div>
 
             {/* Processing Time */}
             <div className="flex items-center justify-center space-x-2 p-3 bg-gray-50 rounded-lg">
-              <Clock className="h-4 w-4 text-gray-600" />
+              <Clock className="h-4 w-4 text-gray-800 dark:text-gray-200" />
               <span className="text-sm text-gray-700">
                 Tiempo de procesamiento: <strong>{formatTime(processingTime)}</strong>
               </span>

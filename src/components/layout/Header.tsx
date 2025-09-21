@@ -103,7 +103,7 @@ export const Header: React.FC = () => {
                 <span className="hidden sm:inline">Sistema de Convenios</span>
                 <span className="sm:hidden">Convenios</span>
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 hidden lg:block group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200">
+              <p className="text-xs text-gray-800 dark:text-gray-200 hidden lg:block group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200">
                 Powered by Luckia
               </p>
             </div>
@@ -116,7 +116,7 @@ export const Header: React.FC = () => {
                 <div className="text-sm font-medium text-gray-900 dark:text-white" translate="no">
                   {user.email}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Conectado</div>
+                <div className="text-xs text-gray-800 dark:text-gray-200">Conectado</div>
               </div>
               {getRoleBadge()}
             </div>
@@ -206,7 +206,7 @@ export const Header: React.FC = () => {
                     <div className="text-sm font-medium text-gray-900 dark:text-white mb-1" translate="no">
                       {user.email}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                    <div className="text-xs text-gray-800 dark:text-gray-200 mb-3">
                       Usuario conectado
                     </div>
                     {getRoleBadge()}
@@ -255,7 +255,7 @@ export const Header: React.FC = () => {
                         </div>
                         <span className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Luckia</span>
                       </div>
-                      <p className="text-xs text-gray-600 group-hover:text-blue-500 transition-colors duration-200">
+                      <p className="text-xs text-gray-800 group-hover:text-blue-500 transition-colors duration-200">
                         Sistema de gestión de convenios empresariales
                       </p>
                       <p className="text-xs text-blue-600 mt-1 font-medium">

@@ -85,7 +85,6 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         .range(0, INITIAL_BATCH_SIZE - 1);
 
       if (error) {
-        console.error('Error searching beneficiarios:', error);
         toast({
           variant: "destructive",
           title: "Error",
@@ -98,14 +97,15 @@ export const SearchForm: React.FC<SearchFormProps> = ({
       const returnedResults = data?.length || 0;
       const hasMoreResults = returnedResults < totalResults;
 
+
       // Actualizar resultados
       onSearch(data || []);
-      
+
       // 🆕 COMUNICAR INSTITUCIÓN DETECTADA AL COMPONENTE PADRE
       if (onSearchStateChange) {
         onSearchStateChange(
-          { searchTerm, searchType }, 
-          totalResults, 
+          { searchTerm, searchType },
+          totalResults,
           hasMoreResults,
           detectedInstitution // ← NUEVA INFORMACIÓN PASADA
         );
@@ -139,7 +139,6 @@ export const SearchForm: React.FC<SearchFormProps> = ({
       }
 
     } catch (error) {
-      console.error('Error:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -217,8 +216,8 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         
         {/* Tipo de búsqueda */}
         <div className="lg:col-span-4 space-y-3">
-          <Label htmlFor="searchType" className="text-sm font-semibold flex items-center space-x-2 text-gray-700 dark:text-gray-300 transition-colors duration-500">
-            <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400 transition-colors duration-500" />
+          <Label htmlFor="searchType" className="text-sm font-semibold flex items-center space-x-2 text-gray-700 dark:text-gray-100 transition-colors duration-500">
+            <Filter className="h-4 w-4 text-gray-700 dark:text-gray-200 transition-colors duration-500" />
             <span>Tipo de búsqueda</span>
           </Label>
           <Select value={searchType} onValueChange={setSearchType}>
@@ -240,7 +239,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-500">{option.label}</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block transition-colors duration-500">{option.description}</div>
+                        <div className="text-xs text-gray-700 dark:text-gray-200 hidden sm:block transition-colors duration-500">{option.description}</div>
                       </div>
                     </div>
                   </SelectItem>
@@ -252,7 +251,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
 
         {/* Término de búsqueda */}
         <div className="lg:col-span-5 space-y-3">
-          <Label htmlFor="searchTerm" className="text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-500">
+          <Label htmlFor="searchTerm" className="text-sm font-semibold text-gray-700 dark:text-gray-100 transition-colors duration-500">
             Término de búsqueda
           </Label>
           <div className="relative">
@@ -267,14 +266,14 @@ export const SearchForm: React.FC<SearchFormProps> = ({
               translate="no"
             />
             <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-              <SelectedIcon className={`h-5 w-5 ${selectedOption?.textColor || 'text-gray-400'}`} />
+              <SelectedIcon className={`h-5 w-5 ${selectedOption?.textColor || 'text-gray-700 dark:text-gray-200'}`} />
             </div>
           </div>
         </div>
 
         {/* Botones de acción */}
         <div className="lg:col-span-3 space-y-3">
-          <Label className="text-sm font-semibold text-gray-700 dark:text-gray-300 invisible transition-colors duration-500">Acciones</Label>
+          <Label className="text-sm font-semibold text-gray-700 dark:text-gray-100 invisible transition-colors duration-500">Acciones</Label>
           <div className="flex space-x-3">
             <Button 
               type="submit" 
@@ -364,7 +363,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
       </Card>
 
       {/* Quick Stats - Solo en desktop */}
-      <div className="hidden lg:flex items-center justify-between pt-2 text-sm text-gray-600 dark:text-gray-400 transition-colors duration-500">
+      <div className="hidden lg:flex items-center justify-between pt-2 text-sm text-gray-800 dark:text-gray-100 transition-colors duration-500">
         <div className="flex items-center space-x-2">
           <span>Búsquedas recientes:</span>
           <Badge variant="outline" className="cursor-not-allowed opacity-50">
