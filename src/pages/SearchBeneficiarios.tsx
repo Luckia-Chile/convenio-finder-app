@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Search, Upload, Users, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { applyBeneficiariosFilter } from '@/lib/beneficiariosQuery';
 import { useToast } from '@/hooks/use-toast';
 import { InstitutionInfo } from '@/utils/institutionDetector';
 
@@ -45,21 +46,7 @@ const SearchBeneficiarios = () => {
       // Aplicar los mismos filtros de la búsqueda original
       const { searchTerm, searchType } = currentSearchParams;
       
-      if (searchTerm?.trim()) {
-        switch (searchType) {
-          case 'rut':
-            query = query.ilike('rut', `%${searchTerm}%`);
-            break;
-          case 'nombre':
-            query = query.or(`nombre.ilike.%${searchTerm}%,apellido.ilike.%${searchTerm}%`);
-            break;
-          case 'empresa':
-            query = query.ilike('empresa', `%${searchTerm}%`);
-            break;
-          default:
-            query = query.or(`rut.ilike.%${searchTerm}%,nombre.ilike.%${searchTerm}%,apellido.ilike.%${searchTerm}%,empresa.ilike.%${searchTerm}%`);
-        }
-      }
+      query = applyBeneficiariosFilter(query, searchTerm, searchType);
 
       const { data, error } = await query
         .order('created_at', { ascending: false })

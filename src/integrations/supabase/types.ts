@@ -42,6 +42,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          role: 'admin' | 'consultor'
           updated_at: string | null
         }
         Insert: {
@@ -49,6 +50,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          role?: 'admin' | 'consultor'
           updated_at?: string | null
         }
         Update: {
@@ -56,51 +58,55 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          role?: 'admin' | 'consultor'
           updated_at?: string | null
         }
         Relationships: []
-      }
-      // NUEVA TABLA SEPARADA para roles - NO tocar profiles
-      user_roles: {
-        Row: {
-          id: string
-          user_id: string
-          role: string
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          role?: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          role?: string
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      clear_beneficiarios_data: {
+      is_super_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      list_users_with_roles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          full_name: string | null
+          role: string
+          is_super_admin: boolean
+          created_at: string
+          last_sign_in_at: string | null
+        }[]
+      }
+      set_user_role: {
+        Args: { target_user: string; new_role: string }
         Returns: undefined
+      }
+      admin_create_user: {
+        Args: { new_email: string; new_password: string; new_full_name?: string; new_role?: string }
+        Returns: Json
+      }
+      admin_reset_password: {
+        Args: { target_user: string }
+        Returns: Json
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      get_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      replace_beneficiarios: {
+        Args: { rows: Json }
+        Returns: number
       }
     }
     Enums: {

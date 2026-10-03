@@ -2,17 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
+import { useSuperAdmin } from '@/hooks/useSuperAdmin';
 import { useTheme } from '@/contexts/ThemeContext';
 import { logger } from '@/lib/secureLogger';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LogOut, Shield, User, Menu, X, Moon, Sun } from 'lucide-react';
+import { LogOut, Shield, User, Menu, X, Moon, Sun, Users } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Link } from 'react-router-dom';
 
 export const Header: React.FC = () => {
   const { user, signOut } = useAuth();
   const { role, isAdmin, loading } = useRole();
+  const { isSuperAdmin } = useSuperAdmin();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -121,6 +123,15 @@ export const Header: React.FC = () => {
               {getRoleBadge()}
             </div>
             
+            {isSuperAdmin && (
+              <Button asChild variant="outline" size="sm" className="flex items-center space-x-2">
+                <Link to="/usuarios">
+                  <Users className="h-4 w-4" />
+                  <span>Usuarios</span>
+                </Link>
+              </Button>
+            )}
+
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -263,6 +274,15 @@ export const Header: React.FC = () => {
                       </p>
                     </Link>
                   </div>
+
+                  {isSuperAdmin && (
+                    <Button asChild variant="outline" className="w-full h-11">
+                      <Link to="/usuarios" onClick={() => setMobileMenuOpen(false)}>
+                        <Users className="h-4 w-4 mr-2" />
+                        Gestión de usuarios
+                      </Link>
+                    </Button>
+                  )}
 
                   {/* Botón de Salir */}
                   <Button

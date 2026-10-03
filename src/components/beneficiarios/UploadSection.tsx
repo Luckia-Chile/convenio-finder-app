@@ -143,66 +143,28 @@ export const UploadSection: React.FC = () => {
     });
   };
 
+  // Reemplazo atómico: una sola transacción en el servidor (replace_beneficiarios).
+  // Si algo falla se conservan los datos anteriores, por eso no admite cancelación a medias.
   const processInBatches = async (data: any[]) => {
-    const totalBatches = Math.ceil(data.length / BATCH_SIZE);
     const startTime = Date.now();
 
     setUploadState(prev => ({
       ...prev,
       stage: 'processing',
-      totalBatches,
+      totalBatches: 1,
+      currentBatch: 1,
       totalRows: data.length,
       startTime,
       cancelRequested: false
     }));
 
-    // Clear existing data first
-    const { error: clearError } = await supabase.rpc('clear_beneficiarios_data');
-    if (clearError) {
-      throw new Error(`Error al limpiar datos existentes: ${clearError.message}`);
+    const { data: inserted, error } = await supabase.rpc('replace_beneficiarios', { rows: data });
+    if (error) {
+      throw new Error(`Error al reemplazar los beneficiarios (los datos anteriores se conservaron): ${error.message}`);
     }
 
-    let processedRows = 0;
-
-    for (let i = 0; i < data.length; i += BATCH_SIZE) {
-      // Check for cancellation
-      if (uploadState.cancelRequested) {
-        throw new Error('Carga cancelada por el usuario');
-      }
-
-      const batch = data.slice(i, i + BATCH_SIZE);
-      const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
-      
-      // Insert batch - insert ALL valid rows without any duplicate checking
-      const { error: insertError } = await supabase
-        .from('beneficiarios')
-        .insert(batch);
-
-      if (insertError) {
-        throw new Error(`Error al insertar lote ${currentBatch}: ${insertError.message}`);
-      }
-
-      processedRows += batch.length;
-      const progress = (processedRows / data.length) * 100;
-      
-      // Calculate estimated time remaining
-      const elapsed = (Date.now() - startTime) / 1000;
-      const rate = processedRows / elapsed;
-      const remaining = data.length - processedRows;
-      const estimatedTimeRemaining = remaining / rate;
-
-      setUploadState(prev => ({
-        ...prev,
-        progress,
-        currentBatch,
-        processedRows,
-        estimatedTimeRemaining: estimatedTimeRemaining || 0
-      }));
-
-      // Small delay to prevent UI freezing
-      await new Promise(resolve => setTimeout(resolve, 10));
-    }
-
+    const processedRows = (inserted as number | null) ?? data.length;
+    setUploadState(prev => ({ ...prev, progress: 100, processedRows, estimatedTimeRemaining: 0 }));
     return processedRows;
   };
 
@@ -436,7 +398,7 @@ export const UploadSection: React.FC = () => {
           totalRows={uploadState.totalRows}
           estimatedTimeRemaining={uploadState.estimatedTimeRemaining}
           onCancel={handleCancel}
-          canCancel={!uploadState.cancelRequested}
+          canCancel={false}
         />
       )}
 

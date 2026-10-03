@@ -19,11 +19,12 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({
 }) => {
   const { role, loading, error } = useRole();
 
-  if (loading || error) {
-    return <>{children}</>;
+  // Falla cerrado: mientras carga o si hubo error no se muestra contenido protegido.
+  if (loading) {
+    return null;
   }
 
-  const hasPermission = requiredRole === 'consultor' ? true : role === 'admin';
+  const hasPermission = !error && (requiredRole === 'consultor' || role === 'admin');
 
   if (hasPermission) {
     return <>{children}</>;

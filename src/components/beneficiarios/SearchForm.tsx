@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, X, Filter, Loader2, Sparkles, Target, Users, Building2, CreditCard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { applyBeneficiariosFilter } from '@/lib/beneficiariosQuery';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -62,22 +63,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
       const INITIAL_BATCH_SIZE = 200;
       let query = supabase.from('beneficiarios').select('*', { count: 'exact' });
 
-      // Aplicar filtros según el tipo de búsqueda (FUNCIONALIDAD ORIGINAL INTACTA)
-      if (searchTerm.trim()) {
-        switch (searchType) {
-          case 'rut':
-            query = query.ilike('rut', `%${searchTerm}%`);
-            break;
-          case 'nombre':
-            query = query.or(`nombre.ilike.%${searchTerm}%,apellido.ilike.%${searchTerm}%`);
-            break;
-          case 'empresa':
-            query = query.ilike('empresa', `%${searchTerm}%`);
-            break;
-          default:
-            query = query.or(`rut.ilike.%${searchTerm}%,nombre.ilike.%${searchTerm}%,apellido.ilike.%${searchTerm}%,empresa.ilike.%${searchTerm}%`);
-        }
-      }
+      query = applyBeneficiariosFilter(query, searchTerm, searchType);
 
       // Obtener primeros 200 resultados con count total
       const { data, error, count } = await query

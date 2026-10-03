@@ -5,12 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 const Auth: React.FC = () => {
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  // Registro público deshabilitado: las cuentas las crea un administrador.
   const { user, loading } = useAuth();
-
-  const toggleMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
-  };
 
   if (loading) {
     return (
@@ -39,7 +35,7 @@ const Auth: React.FC = () => {
             Plataforma de gestión para acuerdos de consultoría
           </p>
         </div>
-        <AuthForm mode={mode} onToggleMode={toggleMode} />
+        <AuthForm mode="login" />
       </div>
     </div>
   );

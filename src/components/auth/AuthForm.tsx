@@ -10,7 +10,7 @@ import { Eye, EyeOff } from 'lucide-react';
 
 interface AuthFormProps {
   mode: 'login' | 'signup';
-  onToggleMode: () => void;
+  onToggleMode?: () => void;
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
@@ -158,18 +158,20 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode, onToggleMode }) => {
           </Button>
         </form>
         
-        <div className="mt-4 text-center">
-          <Button
-            variant="link"
-            onClick={onToggleMode}
-            className="text-sm"
-          >
-            {mode === 'login' 
-              ? '¿No tienes cuenta? Regístrate' 
-              : '¿Ya tienes cuenta? Inicia sesión'
-            }
-          </Button>
-        </div>
+        {onToggleMode && (
+          <div className="mt-4 text-center">
+            <Button
+              variant="link"
+              onClick={onToggleMode}
+              className="text-sm"
+            >
+              {mode === 'login'
+                ? '¿No tienes cuenta? Regístrate'
+                : '¿Ya tienes cuenta? Inicia sesión'
+              }
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

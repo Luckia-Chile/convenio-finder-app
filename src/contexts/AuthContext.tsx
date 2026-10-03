@@ -41,7 +41,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // If signing out, clear any local storage or cached data
         if (event === 'SIGNED_OUT') {
           logger.auth('User signed out, clearing state');
-          localStorage.removeItem('sb-' + supabase.supabaseUrl.split('//')[1] + '-auth-token');
         }
       }
     );
