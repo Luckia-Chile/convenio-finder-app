@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MAX_UPLOAD_BYTES } from '@/config/app';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,6 @@ import { Upload, FileSpreadsheet, AlertCircle, X, CloudUpload, CheckCircle, File
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import * as XLSX from 'xlsx';
 
 import { processExcelData, BATCH_SIZE } from '@/utils/excelDataProcessor';
 import { UploadProgress } from './UploadProgress';
@@ -54,12 +54,12 @@ export const UploadSection: React.FC = () => {
     if (!file) return;
 
     // Validate file size (warn if > 50MB)
-    const maxSize = 50 * 1024 * 1024; // 50MB
+    const maxSize = MAX_UPLOAD_BYTES;
     if (file.size > maxSize) {
       toast({
         variant: "destructive",
         title: "Archivo muy grande",
-        description: `El archivo es de ${(file.size / 1024 / 1024).toFixed(1)}MB. Archivos grandes pueden tardar más en procesarse.`,
+        description: `El archivo es de ${(file.size / 1024 / 1024).toFixed(1)}MB (máximo recomendado ${(maxSize / 1024 / 1024).toFixed(0)}MB). Archivos grandes pueden tardar más en procesarse.`,
       });
     }
 
@@ -77,70 +77,49 @@ export const UploadSection: React.FC = () => {
   };
 
   const analyzeFile = async (file: File): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
-      reader.onload = (e) => {
-        try {
-          const data = e.target?.result;
-          const workbook = XLSX.read(data, { type: 'binary' });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          
-          // Convert to JSON
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-          
-          // Remove header row and empty rows
-          const dataRows = jsonData.slice(1).filter((row: any) => 
-            row && row.length > 0 && row.some((cell: any) => cell !== null && cell !== undefined && cell !== '')
-          );
+    // SheetJS se descarga solo cuando un admin elige un archivo (mantiene liviano el resto de la app).
+    const XLSX = await import('xlsx');
+    const buffer = await file.arrayBuffer();
 
-          if (dataRows.length === 0) {
-            throw new Error('El archivo Excel está vacío o no contiene datos válidos');
-          }
+    const workbook = XLSX.read(buffer, { type: 'array' });
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
 
-          // Convert array rows to objects for processing
-          const objectData = dataRows.map((row: any) => ({
-            APELLIDO: row[0],
-            NOMBRE: row[1], 
-            RUT: row[2],
-            EMPRESA: row[3]
-          }));
+    // Quita la fila de encabezado y las filas vacías
+    const dataRows = jsonData.slice(1).filter((row) =>
+      row && row.length > 0 && row.some((cell) => cell !== null && cell !== undefined && cell !== '')
+    );
 
-          // Process data for analysis - NO DUPLICATE REMOVAL
-          const processed = processExcelData(objectData);
+    if (dataRows.length === 0) {
+      throw new Error('El archivo Excel está vacío o no contiene datos válidos');
+    }
 
-          // Calculate estimated processing time (rough estimate: 100ms per batch)
-          const totalBatches = Math.ceil(processed.validRows.length / BATCH_SIZE);
-          const estimatedTime = totalBatches * 0.5; // 0.5 seconds per batch
+    // Columnas esperadas: APELLIDO, NOMBRE, RUT, EMPRESA
+    const objectData = dataRows.map((row) => ({
+      APELLIDO: row[0],
+      NOMBRE: row[1],
+      RUT: row[2],
+      EMPRESA: row[3]
+    }));
 
-          const analysisData = {
-            fileName: file.name,
-            fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-            totalRows: processed.totalRows,
-            validRows: processed.validRows.length,
-            skippedRows: processed.skippedRows,
-            skippedReasons: processed.skippedReasons,
-            previewRows: processed.validRows.slice(0, 5),
-            estimatedProcessingTime: estimatedTime,
-            processedData: processed.validRows
-          };
+    const processed = processExcelData(objectData);
 
-          setUploadState(prev => ({
-            ...prev,
-            stage: 'analysis',
-            analysisData
-          }));
+    const totalBatches = Math.ceil(processed.validRows.length / BATCH_SIZE);
+    const estimatedTime = totalBatches * 0.5;
 
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      };
+    const analysisData = {
+      fileName: file.name,
+      fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+      totalRows: processed.totalRows,
+      validRows: processed.validRows.length,
+      skippedRows: processed.skippedRows,
+      skippedReasons: processed.skippedReasons,
+      previewRows: processed.validRows.slice(0, 5),
+      estimatedProcessingTime: estimatedTime,
+      processedData: processed.validRows
+    };
 
-      reader.onerror = () => reject(new Error('Error al leer el archivo'));
-      reader.readAsBinaryString(file);
-    });
+    setUploadState(prev => ({ ...prev, stage: 'analysis', analysisData }));
   };
 
   // Reemplazo atómico: una sola transacción en el servidor (replace_beneficiarios).

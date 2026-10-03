@@ -63,3 +63,6 @@ security_report_*.pdf
 *.njsproj
 *.sln
 *.sw?
+
+# Archivos retirados del proyecto (limpieza); se conservan solo en local
+unused_files/

@@ -1,73 +1,42 @@
-# Welcome to your Lovable project
+# Sistema de Convenios
 
-## Project info
+Aplicación web para consultar beneficiarios de convenios y cargarlos masivamente desde Excel.
+React + Vite + TypeScript + Tailwind/shadcn, sobre un Supabase self-hosted (on-premise).
 
-**URL**: https://lovable.dev/projects/dec9205b-d407-4b72-b523-e7dd89021e48
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/dec9205b-d407-4b72-b523-e7dd89021e48) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Puesta en marcha
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm install --legacy-peer-deps
+cp .env.example .env.local      # completa VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY
+npm run dev                     # http://localhost:8080
 ```
 
-**Edit a file directly in GitHub**
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Build de producción en `dist/` |
+| `npm test` | Pruebas unitarias (Vitest) |
+| `npm run lint` | ESLint |
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Roles y permisos
 
-**Use GitHub Codespaces**
+- **consultor:** busca beneficiarios.
+- **admin:** además carga/reemplaza el Excel y administra instituciones.
+- **super admin** (`public.super_admins`, solo si además son admin): crea usuarios, restablece contraseñas y cambia roles desde `/usuarios`.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+La autorización real la aplican RLS y las funciones SQL; la interfaz solo oculta opciones.
 
-## What technologies are used for this project?
+## Base de datos
 
-This project is built with:
+Ver [supabase/README.md](supabase/README.md). Resumen: ejecutar en orden `supabase/onprem/001`, `002` y `003`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Despliegue (Easypanel)
 
-## How can I deploy this project?
+El `Dockerfile` compila la app y la sirve con nginx (cabeceras de seguridad y CSP incluidas).
+Define como **Build args**: `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`. Las variables `VITE_*` quedan
+incrustadas en el bundle: usa solo la anon key, **nunca** la `service_role`.
 
-Simply open [Lovable](https://lovable.dev/projects/dec9205b-d407-4b72-b523-e7dd89021e48) and click on Share -> Publish.
+## Scripts de migración (`scripts/`)
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+`export-supabase.mjs`, `import-supabase.mjs` y `generate-supabase-secrets.mjs` mueven datos entre instancias.
+Escriben en `db_exports/` (ignorada por git). Contienen datos personales: no los subas ni los compartas.

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   
   <!-- Mobile Optimization Meta Tags CRÍTICAS -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -26,11 +26,6 @@
   
   <!-- Favicons optimizados -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  
-  <!-- Performance hints -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   
   <!-- Critical CSS inlined para performance -->
   <style>
@@ -307,121 +302,6 @@
   
   <!-- Main app container -->
   <div id="root"></div>
-  
-  <!-- Performance optimized scripts -->
-  <script>
-    // Performance timing
-    const startTime = performance.now();
-    
-    // Enhanced loading experience
-    document.addEventListener('DOMContentLoaded', function() {
-      const loadingScreen = document.getElementById('initial-loading');
-      if (loadingScreen) {
-        // Mínimo tiempo para experiencia suave
-        const minLoadTime = 1200; // 1.2 segundos
-        const elapsed = performance.now() - startTime;
-        const remainingTime = Math.max(0, minLoadTime - elapsed);
-        
-        setTimeout(() => {
-          loadingScreen.style.opacity = '0';
-          loadingScreen.style.transform = 'scale(0.95)';
-          loadingScreen.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-          setTimeout(() => {
-            loadingScreen.remove();
-            console.log('🎉 Sistema de Convenios cargado exitosamente');
-          }, 600);
-        }, remainingTime);
-      }
-    });
-    
-    // iOS Safari optimizations
-    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-      // Prevenir zoom en inputs
-      const viewportMeta = document.querySelector('meta[name="viewport"]');
-      if (viewportMeta) {
-        let content = viewportMeta.getAttribute('content');
-        
-        document.addEventListener('focusin', (e) => {
-          if (e.target.matches('input, select, textarea')) {
-            viewportMeta.setAttribute('content', content + ', user-scalable=no');
-          }
-        });
-        
-        document.addEventListener('focusout', () => {
-          viewportMeta.setAttribute('content', content);
-        });
-      }
-      
-      // Prevenir overscroll
-      /*
-      document.addEventListener('touchmove', (e) => {
-        if (e.target.closest('.overflow-scroll, .overflow-auto')) return;
-        e.preventDefault();
-      }, { passive: false });
-      */
-    }
-    // Performance monitoring
-    window.addEventListener('load', () => {
-      if ('performance' in window) {
-        setTimeout(() => {
-          const perfData = window.performance.timing;
-          const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-          const firstPaint = performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint');
-          
-          console.log('📊 Performance Metrics:');
-          console.log(`   ⏱️  Page load: ${pageLoadTime}ms`);
-          if (firstPaint) {
-            console.log(`   🎨 First paint: ${firstPaint.startTime.toFixed(2)}ms`);
-          }
-          
-          // Advertir si el rendimiento es lento
-          if (pageLoadTime > 3000) {
-            console.warn('⚠️  Carga lenta detectada. Considera optimizar la conexión.');
-          }
-        }, 0);
-      }
-    });
-    
-    // Network status monitoring
-    function updateNetworkStatus() {
-      const isOnline = navigator.onLine;
-      console.log(`📡 Estado de red: ${isOnline ? 'En línea ✅' : 'Sin conexión ❌'}`);
-      
-      // Mostrar indicador visual si es necesario
-      document.body.setAttribute('data-network-status', isOnline ? 'online' : 'offline');
-    }
-    
-    window.addEventListener('online', updateNetworkStatus);
-    window.addEventListener('offline', updateNetworkStatus);
-    updateNetworkStatus(); // Estado inicial
-    
-    // Memory usage monitoring (desarrollo)
-    if (process.env.NODE_ENV === 'development' && 'memory' in performance) {
-      setInterval(() => {
-        const memory = performance.memory;
-        const usedMB = (memory.usedJSHeapSize / 1024 / 1024).toFixed(2);
-        if (memory.usedJSHeapSize > 50 * 1024 * 1024) { // 50MB
-          console.warn(`🚨 Alto uso de memoria: ${usedMB}MB`);
-        }
-      }, 30000);
-    }
-    
-    // Prefetch crítico para rutas principales
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(() => {
-        // Precargar rutas principales
-        const routes = ['/beneficiarios', '/auth'];
-        routes.forEach(route => {
-          const link = document.createElement('link');
-          link.rel = 'prefetch';
-          link.href = route;
-          document.head.appendChild(link);
-        });
-      });
-    }
-    
-    console.log('🚀 Sistema de Convenios - Versión Responsive de Lujo iniciado');
-  </script>
   
   <!-- Main React app -->
   <script type="module" src="/src/main.tsx"></script>

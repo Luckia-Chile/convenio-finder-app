@@ -1,3 +1,5 @@
+import { COMPANIES_WITHOUT_LIST } from '@/config/app';
+
 interface RawExcelRow {
   [key: string]: any;
 }
@@ -59,9 +61,10 @@ const validateRow = (row: RawExcelRow, index: number): { isValid: boolean; reaso
   }
 
   // Handle special institution cases (mantener como antes)
-  if (empresa.toUpperCase().includes('ARICA COLLEGE') && 
-      (apellido.toUpperCase().includes('SIN LISTADO') || nombre.toUpperCase().includes('SIN LISTADO'))) {
-    return { isValid: false, reason: 'ARICA COLLEGE sin listado' };
+  const sinListado = apellido.toUpperCase().includes('SIN LISTADO') || nombre.toUpperCase().includes('SIN LISTADO');
+  const sinListadoCompany = COMPANIES_WITHOUT_LIST.find(c => empresa.toUpperCase().includes(c));
+  if (sinListadoCompany && sinListado) {
+    return { isValid: false, reason: `${sinListadoCompany} sin listado` };
   }
 
   // AHORA: Cualquier fila con al menos UN dato se considera válida

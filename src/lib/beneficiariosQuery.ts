@@ -14,7 +14,13 @@ const normalizeRut = (s: string) => s.replace(/[.\-\s]/g, '');
  * Aplica el filtro de búsqueda de beneficiarios de forma segura.
  * Compartido por la búsqueda inicial y por "cargar más".
  */
-export const applyBeneficiariosFilter = <Q extends { ilike: Function; or: Function }>(
+// Subconjunto del query builder de Supabase que usamos (cada filtro devuelve el mismo builder).
+interface Filterable<Q> {
+  ilike(column: string, pattern: string): Q;
+  or(filters: string): Q;
+}
+
+export const applyBeneficiariosFilter = <Q extends Filterable<Q>>(
   query: Q,
   searchTerm: string | undefined,
   searchType: SearchType

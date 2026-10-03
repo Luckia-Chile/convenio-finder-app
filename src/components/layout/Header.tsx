@@ -1,5 +1,6 @@
 // src/components/layout/Header.tsx
 import React, { useState, useEffect } from 'react';
+import { BRAND } from '@/config/app';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
 import { useSuperAdmin } from '@/hooks/useSuperAdmin';
@@ -91,8 +92,8 @@ export const Header: React.FC = () => {
             <div className="relative flex-shrink-0">
               <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl overflow-hidden bg-white shadow-lg group-hover:shadow-xl transition-all duration-300 p-1 group-hover:scale-105">
                 <img 
-                  src="/Logo_Luckia.svg" 
-                  alt="Luckia Logo"
+                  src={BRAND.logo} 
+                  alt={`${BRAND.company} Logo`}
                   className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
@@ -102,11 +103,11 @@ export const Header: React.FC = () => {
             
             <div className="min-w-0 flex-1">
               <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
-                <span className="hidden sm:inline">Sistema de Convenios</span>
+                <span className="hidden sm:inline">{BRAND.name}</span>
                 <span className="sm:hidden">Convenios</span>
               </h1>
               <p className="text-xs text-gray-800 dark:text-gray-200 hidden lg:block group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200">
-                Powered by Luckia
+                Powered by {BRAND.company}
               </p>
             </div>
           </Link>
@@ -195,8 +196,8 @@ export const Header: React.FC = () => {
                       >
                         <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shadow-md group-hover:shadow-lg transition-all duration-200">
                           <img 
-                            src="/Logo_Luckia.svg" 
-                            alt="Luckia Logo"
+                            src={BRAND.logo} 
+                            alt={`${BRAND.company} Logo`}
                             className="w-full h-full object-contain"
                           />
                         </div>
@@ -259,12 +260,12 @@ export const Header: React.FC = () => {
                       <div className="flex items-center space-x-3 mb-2">
                         <div className="w-6 h-6 rounded overflow-hidden">
                           <img 
-                            src="/Logo_Luckia.svg" 
-                            alt="Luckia Logo"
+                            src={BRAND.logo} 
+                            alt={`${BRAND.company} Logo`}
                             className="w-full h-full object-contain"
                           />
                         </div>
-                        <span className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Luckia</span>
+                        <span className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">{BRAND.company}</span>
                       </div>
                       <p className="text-xs text-gray-800 group-hover:text-blue-500 transition-colors duration-200">
                         Sistema de gestión de convenios empresariales

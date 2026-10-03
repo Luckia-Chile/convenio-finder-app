@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
+import { BRAND, SEARCH_PAGE_SIZE } from '@/config/app';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
 import { AdminOnly } from '@/components/auth/RoleGuard';
@@ -6,7 +7,6 @@ import { Header } from '@/components/layout/Header';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { SearchForm } from '@/components/beneficiarios/SearchForm';
 import { BeneficiariosList } from '@/components/beneficiarios/BeneficiariosList';
-import { UploadSection } from '@/components/beneficiarios/UploadSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { applyBeneficiariosFilter } from '@/lib/beneficiariosQuery';
 import { useToast } from '@/hooks/use-toast';
 import { InstitutionInfo } from '@/utils/institutionDetector';
+
+// Solo los admins cargan archivos: el componente (y SheetJS) no se descarga para consultores.
+const UploadSection = lazy(() =>
+  import('@/components/beneficiarios/UploadSection').then((m) => ({ default: m.UploadSection }))
+);
 
 const SearchBeneficiarios = () => {
   const [searchResults, setSearchResults] = useState([]);
@@ -39,7 +44,7 @@ const SearchBeneficiarios = () => {
     
     try {
       const currentOffset = searchResults.length;
-      const BATCH_SIZE = 200;
+      const BATCH_SIZE = SEARCH_PAGE_SIZE;
       
       let query = supabase.from('beneficiarios').select('*', { count: 'exact' });
 
@@ -98,8 +103,8 @@ const SearchBeneficiarios = () => {
               <div className="flex justify-center mb-4">
                 <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-colors duration-500">
                   <img 
-                    src="/Logo_Luckia.svg" 
-                    alt="Luckia Logo" 
+                    src={BRAND.logo} 
+                    alt={`${BRAND.company} Logo`} 
                     className="h-12 w-auto"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
@@ -217,7 +222,9 @@ const SearchBeneficiarios = () => {
                   </div>
                   
                   <div className="p-6">
-                    <UploadSection />
+                    <Suspense fallback={<p className="text-sm text-muted-foreground py-6 text-center">Cargando…</p>}>
+                      <UploadSection />
+                    </Suspense>
                   </div>
                 </div>
               </TabsContent>

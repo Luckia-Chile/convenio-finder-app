@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SEARCH_PAGE_SIZE } from '@/config/app';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -60,7 +61,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
         }
       }
 
-      const INITIAL_BATCH_SIZE = 200;
+      const INITIAL_BATCH_SIZE = SEARCH_PAGE_SIZE;
       let query = supabase.from('beneficiarios').select('*', { count: 'exact' });
 
       query = applyBeneficiariosFilter(query, searchTerm, searchType);

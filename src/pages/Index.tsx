@@ -1,5 +1,6 @@
 // src/pages/Index.tsx
 import React, { useEffect, useState } from 'react';
+import { BRAND } from '@/config/app';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRole } from '@/hooks/useRole';
 import { RoleContent } from '@/components/auth/RoleGuard';
@@ -38,8 +39,8 @@ const Index = () => {
           <div className="mb-8 flex justify-center">
             <div className="p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-600 transition-all duration-300">
               <img 
-                src="/Logo_Luckia.svg" 
-                alt="Luckia Logo" 
+                src={BRAND.logo} 
+                alt={`${BRAND.company} Logo`} 
                 className="h-20 w-auto mx-auto"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -49,7 +50,7 @@ const Index = () => {
           </div>
           
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 mb-4 transition-all duration-300">
-            Sistema de Convenios
+            {BRAND.name}
           </h1>
           <p className="text-xl text-gray-800 dark:text-gray-100 mb-8 leading-relaxed transition-colors duration-300">
             Plataforma de gestión para acuerdos de consultoría
@@ -78,8 +79,8 @@ const Index = () => {
           <div className="mb-6 md:mb-0">
             <div className="flex items-center space-x-3 mb-4">
               <img 
-                src="/Logo_Luckia.svg" 
-                alt="Luckia Logo" 
+                src={BRAND.logo} 
+                alt={`${BRAND.company} Logo`} 
                 className="h-12 w-auto filter brightness-0 invert"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
@@ -210,8 +211,8 @@ const Index = () => {
           <div className="mb-6 md:mb-0">
             <div className="flex items-center space-x-3 mb-4">
               <img 
-                src="/Logo_Luckia.svg" 
-                alt="Luckia Logo" 
+                src={BRAND.logo} 
+                alt={`${BRAND.company} Logo`} 
                 className="h-12 w-auto filter brightness-0 invert"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';

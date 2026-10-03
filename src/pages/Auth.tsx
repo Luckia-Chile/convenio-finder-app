@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { BRAND } from '@/config/app';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -29,7 +30,7 @@ const Auth: React.FC = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-500">
-            Sistema de Convenios
+            {BRAND.name}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2 transition-colors duration-500">
             Plataforma de gestión para acuerdos de consultoría
