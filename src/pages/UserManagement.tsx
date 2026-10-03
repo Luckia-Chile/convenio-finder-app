@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Check, Copy, Eye, EyeOff, KeyRound, ShieldCheck, UserPlus, Users } from 'lucide-react';
+import { Eye, EyeOff, KeyRound, ShieldCheck, UserPlus, Users } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
@@ -45,11 +45,6 @@ interface ManagedUser {
   last_sign_in_at: string | null;
 }
 
-interface Credential {
-  email: string;
-  password: string;
-}
-
 const roleLabel = (r: Role) => (r === 'admin' ? 'Administrador' : 'Consultor');
 
 const formatDate = (iso: string | null) =>
@@ -64,8 +59,8 @@ const UserManagementContent: React.FC = () => {
 
   const [pendingRole, setPendingRole] = useState<{ user: ManagedUser; newRole: Role } | null>(null);
   const [pendingReset, setPendingReset] = useState<ManagedUser | null>(null);
-  const [credential, setCredential] = useState<Credential | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [resetPassword, setResetPassword] = useState('');
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [newEmail, setNewEmail] = useState('');
@@ -112,19 +107,30 @@ const UserManagementContent: React.FC = () => {
     setPendingRole(null);
   };
 
-  const confirmReset = async () => {
+  const closeReset = () => {
+    setPendingReset(null);
+    setResetPassword('');
+    setShowResetPassword(false);
+  };
+
+  const submitReset = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!pendingReset) return;
     setSaving(true);
-    const { data, error } = await supabase.rpc('admin_reset_password', { target_user: pendingReset.id });
+    const { data, error } = await supabase.rpc('admin_reset_password', {
+      target_user: pendingReset.id,
+      new_password: resetPassword,
+    });
     setSaving(false);
     if (error || !data) {
       fail('No se pudo restablecer la contraseña', error?.message ?? 'Respuesta vacía');
-    } else {
-      const res = data as { email: string; password: string };
-      setCopied(false);
-      setCredential({ email: res.email, password: res.password });
+      return;
     }
-    setPendingReset(null);
+    toast({
+      title: 'Contraseña actualizada',
+      description: `${pendingReset.email} debe iniciar sesión con la nueva contraseña.`,
+    });
+    closeReset();
   };
 
   const submitCreate = async (e: React.FormEvent) => {
@@ -150,16 +156,6 @@ const UserManagementContent: React.FC = () => {
     setShowNewPassword(false);
     toast({ title: 'Usuario creado', description: `${res.email} ya puede iniciar sesión con la contraseña que definiste.` });
     await loadUsers();
-  };
-
-  const copyPassword = async () => {
-    if (!credential) return;
-    try {
-      await navigator.clipboard.writeText(credential.password);
-      setCopied(true);
-    } catch {
-      toast({ variant: 'destructive', title: 'No se pudo copiar', description: 'Copia la contraseña manualmente.' });
-    }
   };
 
   const admins = users.filter((u) => u.role === 'admin').length;
@@ -301,34 +297,57 @@ const UserManagementContent: React.FC = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Restablecer contraseña */}
-      <AlertDialog open={!!pendingReset} onOpenChange={(open) => !open && !saving && setPendingReset(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Restablecer la contraseña?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {pendingReset && (
-                <>
-                  Se generará una contraseña temporal para <span translate="no">{pendingReset.email}</span> y se
-                  cerrarán sus sesiones abiertas. La contraseña anterior dejará de servir.
-                </>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={saving}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={saving}
-              onClick={(e) => {
-                e.preventDefault();
-                confirmReset();
-              }}
-            >
-              {saving ? 'Generando…' : 'Restablecer'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Restablecer contraseña (la define quien administra) */}
+      <Dialog open={!!pendingReset} onOpenChange={(open) => !open && !saving && closeReset()}>
+        <DialogContent>
+          <form onSubmit={submitReset} className="space-y-4">
+            <DialogHeader>
+              <DialogTitle>Restablecer contraseña</DialogTitle>
+              <DialogDescription>
+                {pendingReset && (
+                  <>
+                    Define la nueva contraseña de <span translate="no">{pendingReset.email}</span>. Se cerrarán sus
+                    sesiones abiertas y la contraseña anterior dejará de servir.
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2">
+              <Label htmlFor="reset-password">Nueva contraseña</Label>
+              <div className="relative">
+                <Input
+                  id="reset-password"
+                  type={showResetPassword ? 'text' : 'password'}
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                  value={resetPassword}
+                  onChange={(e) => setResetPassword(e.target.value)}
+                  placeholder="Mínimo 8 caracteres"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowResetPassword((v) => !v)}
+                  aria-label={showResetPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {showResetPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={closeReset} disabled={saving}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving || resetPassword.length < 8}>
+                {saving ? 'Guardando…' : 'Guardar contraseña'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Nuevo usuario */}
       <Dialog open={createOpen} onOpenChange={(open) => !saving && setCreateOpen(open)}>
@@ -411,41 +430,6 @@ const UserManagementContent: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Contraseña temporal (se muestra una sola vez) */}
-      <Dialog open={!!credential} onOpenChange={(open) => !open && setCredential(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Contraseña restablecida</DialogTitle>
-            <DialogDescription>
-              Entrega esta contraseña temporal a la persona por un canal seguro. No se volverá a mostrar.
-            </DialogDescription>
-          </DialogHeader>
-          {credential && (
-            <div className="space-y-3">
-              <div>
-                <div className="text-xs text-muted-foreground">Correo</div>
-                <div className="font-medium" translate="no">
-                  {credential.email}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-muted-foreground">Contraseña temporal</div>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 rounded-md border bg-muted px-3 py-2 font-mono text-sm select-all" translate="no">
-                    {credential.password}
-                  </code>
-                  <Button type="button" variant="outline" size="sm" onClick={copyPassword} aria-label="Copiar contraseña">
-                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button onClick={() => setCredential(null)}>Listo</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

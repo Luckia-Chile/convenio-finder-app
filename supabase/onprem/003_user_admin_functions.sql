@@ -73,7 +73,11 @@ end;
 $$;
 grant execute on function public.admin_create_user(text, text, text, text) to authenticated;
 
-create or replace function public.admin_reset_password(target_user uuid)
+-- Versión anterior (generaba una contraseña aleatoria): se elimina para no dejar una sobrecarga.
+drop function if exists public.admin_reset_password(uuid);
+
+-- El administrador define la nueva contraseña; la base nunca genera contraseñas.
+create or replace function public.admin_reset_password(target_user uuid, new_password text)
 returns jsonb
 language plpgsql
 security definer
@@ -81,10 +85,12 @@ set search_path = public, auth, extensions, pg_temp
 as $$
 declare
   target_email text;
-  temp_password text;
 begin
   if not public.is_super_admin() then
     raise exception 'No autorizado';
+  end if;
+  if new_password is null or length(new_password) < 8 then
+    raise exception 'La contraseña debe tener al menos 8 caracteres';
   end if;
 
   select email into target_email from auth.users where id = target_user;
@@ -92,14 +98,12 @@ begin
     raise exception 'Usuario no encontrado';
   end if;
 
-  temp_password := translate(encode(gen_random_bytes(9), 'base64'), '+/', '-_') || 'aA1';
-
   update auth.users
-     set encrypted_password = crypt(temp_password, gen_salt('bf')),
+     set encrypted_password = crypt(new_password, gen_salt('bf')),
          updated_at = now()
    where id = target_user;
 
-  -- Cierra las sesiones abiertas del usuario (las contraseñas viejas dejan de servir de inmediato).
+  -- Cierra las sesiones abiertas del usuario (la contraseña anterior deja de servir de inmediato).
   delete from auth.sessions where user_id = target_user;
 
   perform public.log_security_event(
@@ -107,7 +111,7 @@ begin
     jsonb_build_object('target_email', target_email)
   );
 
-  return jsonb_build_object('id', target_user, 'email', target_email, 'password', temp_password);
+  return jsonb_build_object('id', target_user, 'email', target_email);
 end;
 $$;
-grant execute on function public.admin_reset_password(uuid) to authenticated;
+grant execute on function public.admin_reset_password(uuid, text) to authenticated;

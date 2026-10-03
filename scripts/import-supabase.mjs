@@ -5,10 +5,11 @@
 //   $env:SUPABASE_SERVICE_ROLE_KEY="<SERVICE_ROLE_KEY de la instancia NUEVA>"
 //   node scripts/import-supabase.mjs [carpeta_export]
 // Si no indicas carpeta usa la más reciente de db_exports/ que tenga beneficiarios.json.
+// Contraseña inicial de los usuarios nuevos (la defines tú; no se genera ninguna):
+//   --password <valor>   o la variable IMPORT_USER_PASSWORD (mínimo 8 caracteres).
 // Es idempotente: si beneficiarios ya tiene filas, aborta (usa --force para vaciar y reimportar).
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs';
-import { randomBytes } from 'node:crypto';
 
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -16,7 +17,9 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   process.exit(1);
 }
 const force = process.argv.includes('--force');
-const dirArg = process.argv.slice(2).find((a) => !a.startsWith('--'));
+const pwIdx = process.argv.indexOf('--password');
+const initialPassword = pwIdx > -1 ? process.argv[pwIdx + 1] : process.env.IMPORT_USER_PASSWORD;
+const dirArg = process.argv.slice(2).find((a, i, arr) => !a.startsWith('--') && arr[i - 1] !== '--password');
 
 const dir =
   dirArg ??
@@ -25,6 +28,11 @@ const dir =
     .sort()
     .pop()}`;
 console.log(`Importando desde ${dir} hacia ${SUPABASE_URL}`);
+
+if (!initialPassword || initialPassword.length < 8) {
+  console.error('Indica la contraseña inicial de los usuarios con --password <valor> (mínimo 8 caracteres)');
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -40,23 +48,22 @@ const { data: existing, error: listErr } = await supabase.auth.admin.listUsers({
 if (listErr) throw new Error(`No se pudo conectar a Auth: ${listErr.message}`);
 const existingByEmail = new Map(existing.users.map((u) => [u.email?.toLowerCase(), u]));
 
-const credentials = [['email', 'rol', 'password_temporal']];
+const created = [];
 for (const u of authUsers) {
   const email = u.email?.toLowerCase();
   const old = profileById.get(u.id);
   const role = old?.role ?? 'consultor';
   let target = existingByEmail.get(email);
   if (!target) {
-    const password = randomBytes(9).toString('base64url') + 'aA1';
     const { data, error } = await supabase.auth.admin.createUser({
       email,
-      password,
+      password: initialPassword,
       email_confirm: true,
       user_metadata: { full_name: old?.full_name ?? u.user_metadata?.full_name ?? '' },
     });
     if (error) throw new Error(`createUser ${email}: ${error.message}`);
     target = data.user;
-    credentials.push([email, role, password]);
+    created.push(email);
   }
   // El trigger handle_new_user ya creó el perfil como 'consultor'; aquí restauramos rol y nombre.
   const { error: pErr } = await supabase
@@ -65,13 +72,7 @@ for (const u of authUsers) {
     .eq('id', target.id);
   if (pErr) throw new Error(`profile ${email}: ${pErr.message}`);
 }
-if (credentials.length > 1) {
-  const f = `${dir}/NUEVAS_credenciales_temporales.csv`;
-  writeFileSync(f, credentials.map((r) => r.join(',')).join('\n'));
-  console.log(`- usuarios: ${credentials.length - 1} creados. Contraseñas temporales en ${f} (no se imprimen)`);
-} else {
-  console.log('- usuarios: ya existían todos');
-}
+console.log(created.length ? `- usuarios: ${created.length} creados con la contraseña inicial indicada` : '- usuarios: ya existían todos');
 
 // ----------------------------------------------------------- beneficiarios
 const rows = read('beneficiarios.json');

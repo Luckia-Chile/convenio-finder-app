@@ -102,7 +102,7 @@ try {
   const deniedFunctions = async (label, client) => {
     expectDenied(`${label}: list_users_with_roles denegado`, await client.rpc('list_users_with_roles'));
     expectDenied(`${label}: set_user_role denegado`, await client.rpc('set_user_role', { target_user: ZERO_UUID, new_role: 'admin' }));
-    expectDenied(`${label}: admin_reset_password denegado`, await client.rpc('admin_reset_password', { target_user: ZERO_UUID }));
+    expectDenied(`${label}: admin_reset_password denegado`, await client.rpc('admin_reset_password', { target_user: ZERO_UUID, new_password: 'ProbePass-1234' }));
     const create = await client.rpc('admin_create_user', { new_email: PROBE_EMAIL, new_password: 'ProbePass-1234', new_full_name: 'probe', new_role: 'consultor' });
     if (!create.error) cleanup.push({ type: 'user', id: create.data?.id });
     expectDenied(`${label}: admin_create_user denegado`, create);
@@ -191,12 +191,22 @@ try {
         const short = await client.rpc('admin_create_user', { new_email: 'zz-otro@invalid.local', new_password: '123' });
         short.error?.message.includes('al menos 8') ? record('PASS', 'rechaza contraseñas de menos de 8 caracteres') : (short.data?.id && cleanup.push({ type: 'user', id: short.data.id }), record('FAIL', 'rechaza contraseñas de menos de 8 caracteres', short.error?.message));
 
-        const reset = await client.rpc('admin_reset_password', { target_user: created.data.id });
-        if (reset.error) record('FAIL', 'restablece contraseña', reset.error.message);
+        const newPw = 'NuevaClave-5678';
+        const shortReset = await client.rpc('admin_reset_password', { target_user: created.data.id, new_password: '123' });
+        shortReset.error?.message.includes('al menos 8')
+          ? record('PASS', 'restablecer rechaza contraseñas de menos de 8 caracteres')
+          : record('FAIL', 'restablecer rechaza contraseñas de menos de 8 caracteres', shortReset.error?.message);
+        const reset = await client.rpc('admin_reset_password', { target_user: created.data.id, new_password: newPw });
+        if (reset.error) record('FAIL', 'restablece con la contraseña definida por el administrador', reset.error.message);
         else {
           const oldLogin = await clientFor().auth.signInWithPassword({ email: PROBE_EMAIL, password: pw });
-          const newLogin = await clientFor().auth.signInWithPassword({ email: PROBE_EMAIL, password: reset.data.password });
-          oldLogin.error && !newLogin.error ? record('PASS', 'restablecer: la clave vieja deja de servir y la nueva funciona') : record('FAIL', 'restablecer: la clave vieja deja de servir y la nueva funciona', `vieja:${oldLogin.error ? 'rechazada' : 'AÚN SIRVE'} nueva:${newLogin.error ? 'rechazada' : 'ok'}`);
+          const newLogin = await clientFor().auth.signInWithPassword({ email: PROBE_EMAIL, password: newPw });
+          oldLogin.error && !newLogin.error
+            ? record('PASS', 'restablecer: la clave vieja deja de servir y la definida funciona')
+            : record('FAIL', 'restablecer: la clave vieja deja de servir y la definida funciona', `vieja:${oldLogin.error ? 'rechazada' : 'AÚN SIRVE'} nueva:${newLogin.error ? 'rechazada' : 'ok'}`);
+          reset.data?.password
+            ? record('FAIL', 'la base no devuelve ni genera contraseñas')
+            : record('PASS', 'la base no devuelve ni genera contraseñas');
         }
       }
     }

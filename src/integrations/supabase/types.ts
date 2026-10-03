@@ -93,7 +93,7 @@ export type Database = {
         Returns: Json
       }
       admin_reset_password: {
-        Args: { target_user: string }
+        Args: { target_user: string; new_password: string }
         Returns: Json
       }
       is_admin: {
